@@ -3,7 +3,7 @@ class Plane:
     #Plane style of tile
 
     #Plane image
-    planeImg = pygame.image.load('grass_tile.png')
+    planeImg = pygame.image.load('Images\\grass_tile.png')
     tileX = 0
     tileY = 0
     #Access gameplay screen
