@@ -1,5 +1,6 @@
-import pygame
-class Plane:
+'''import pygame
+import tile
+class Plane(Tile):
     #Plane style of tile
 
     #Plane image
@@ -15,4 +16,4 @@ class Plane:
 
     def showTile(self,screen):
         screen.blit(self.planeImg, (self.tileX, self.tileY))
-        print("show")
+        print("show")'''
