@@ -3,20 +3,30 @@ class Tile:
     #contains needed information for instantiating individual tiles on grid
     tileX = 0
     tileY = 0
-    planeImg = None
+    tileImg = None
+
+    tile_bonus = 0
     def __init__(self, x, y):
         self.tileX = x
         self.tileY = y
     def showTile(self,screen):
-        screen.blit(self.planeImg, (self.tileX, self.tileY))
+        screen.blit(self.tileImg, (self.tileX, self.tileY))
         print("show")
 
 
 class Plane(Tile):
     #Plane style of tile
-
     #Plane image
-    planeImg = pygame.image.load('Images\\grass_tile.png')
-    tileX = 0
-    tileY = 0
+    tileImg = pygame.image.load('Images\\grass_tile.png')
+
+class Water(Tile):
+    #Water style of tile
+    #Water image
+    tileImg = pygame.image.load('Images\\water_tile.png')
+
+class Forest(Tile):
+    #Forest style of tile
+    #Forest image
+    tileImg = pygame.image.load('Images\\forest_tile.png')
+    tile_bonus = .25
     
