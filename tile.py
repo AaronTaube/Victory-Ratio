@@ -17,16 +17,16 @@ class Tile:
 class Plane(Tile):
     #Plane style of tile
     #Plane image
-    tileImg = pygame.image.load('Images\\grass_tile.png')
+    tileImg = pygame.image.load('Images\\Tiles\\grass_tile.png')
 
 class Water(Tile):
     #Water style of tile
     #Water image
-    tileImg = pygame.image.load('Images\\water_tile.png')
+    tileImg = pygame.image.load('Images\\Tiles\\water_tile.png')
 
 class Forest(Tile):
     #Forest style of tile
     #Forest image
-    tileImg = pygame.image.load('Images\\forest_tile.png')
+    tileImg = pygame.image.load('Images\\Tiles\\forest_tile.png')
     tile_bonus = .25
     
