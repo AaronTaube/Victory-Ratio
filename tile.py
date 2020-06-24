@@ -1,18 +1,19 @@
 import pygame
 class Tile:
-    
+    tile_width = 64
+    tile_height = 64
     def __init__(self, x, y):
         self.tileX = x
         self.tileY = y
         self.tile_bonus = 0
         self.tileImg = pygame.image.load('Images\\Tiles\\unfound_tile.png')
-    def showTile(self,screen):
+    def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
-        print("show")
+        #print("show")
 
 
-class Plane(Tile):
-    #Plane style of tile
+class Plain(Tile):
+    #Plain style of tile
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
         #Plane image
