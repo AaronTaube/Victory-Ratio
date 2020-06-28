@@ -6,10 +6,11 @@ class Unit:
         self.unitX = 0
         self.unitY = 0
         self.unit_type = "unknown"
+        self.unitImg = None
 
 class Axe(Unit):
     #subclass for Axe soldiers
-    def __init__(self):
+    def __init__(self, player):
         Unit.__init__(self)
         self.unit_type = "axe"
         #dict to show which units this soldier gets higher victory chances against
@@ -19,11 +20,16 @@ class Axe(Unit):
             "sword": False,
             "bow": True
         }
-
+        if player == 1:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\BlueAxeIdle.png')
+        elif player == 2:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\RedAxeIdle.png')
+        else:
+            self.unitImg == pygame.image.load('Images\\Soldiers\\SoldierNotFound.png')
 
 class Spear(Unit):
     #subclass for Spear soldiers
-    def __init__(self):
+    def __init__(self, player):
         Unit.__init__(self)
         self.unit_type = "spear"
         #dict to show which units this soldier gets higher victory chances against
@@ -33,9 +39,15 @@ class Spear(Unit):
             "sword": True,
             "bow": True
         }
+        if player == 1:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSpearIdle.png')
+        elif player == 2:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
+        else:
+            self.unitImg == pygame.image.load('Images\\Soldiers\\SoldierNotFound.png')
 class Sword(Unit):
     #subclass for Sword soldiers
-    def __init__(self):
+    def __init__(self, player):
         Unit.__init__(self)
         self.unit_type = "sword"
         #dict to show which units this soldier gets higher victory chances against
@@ -45,6 +57,13 @@ class Sword(Unit):
             "sword": False,
             "bow": True
         }
+        if player == 1:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSwordIdle.png')
+        elif player == 2:
+            self.unitImg = pygame.image.load('Images\\Soldiers\\RedSwordIdle.png')
+        else:
+            self.unitImg == pygame.image.load('Images\\Soldiers\\SoldierNotFound.png')
+
 class Group:
     #collection of units located in a tile
     def __init__(self):
