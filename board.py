@@ -51,10 +51,9 @@ class Grid:
                 y = j * 64 + Map.mapY
                 #temp: randomly assign units
 
-                self.units[i].append(Units.unit.Group)
+                self.units[i].append(Units.unit.Group())
     
     def render_units(self, screen):
         for i in range(Map.column_count):
             for j in range(Map.row_count):
-                self.units[i][j].show_group(self,screen)#not currently sure why I have to send keyword 'self' here, 
-                #                                           as identical code above did not require it
+                self.units[i][j].show_group(screen)
