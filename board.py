@@ -1,6 +1,7 @@
 import tile
 import Units.unit
 import random
+import numpy
 class Map:
     #Positioning Data
     #create grid
@@ -26,7 +27,22 @@ class Map:
                 elif number > .8:
                     self.tiles[i].append(tile.Water(x, y))
                 else:
-                    self.tiles[i].append(tile.Plain(x, y))   
+                    self.tiles[i].append(tile.Plain(x, y)) 
+        """self.tiles = numpy.empty((0,Map.column_count))
+        temp = numpy.empty((0,Map.column_count))
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                x = i * 64 + Map.mapX
+                y = j * 64 + Map.mapY
+                number = random.random()
+                if number < .2:
+                    temp = numpy.append(temp, tile.Forest(x, y))
+                elif number > .8:
+                    temp = numpy.append(temp, tile.Water(x, y))
+                else:
+                    temp = numpy.append(temp, tile.Plain(x, y))
+        self.tiles = numpy.append(self.tiles, temp)  """
+        #Attempted to make numpy matrix play with my tiles, but it did play well with subclasses
 
     def render_map(self,screen):
         for i in range(Map.column_count):
