@@ -14,7 +14,7 @@ class Map:
 
     #Creates and stores an array of tiles that make up the playspace
     def __init__(self):
-        self.tiles = []
+        """self.tiles = []
         for i in range(Map.column_count):
             self.tiles.append([])
             for j in range(Map.row_count):
@@ -27,9 +27,9 @@ class Map:
                 elif number > .8:
                     self.tiles[i].append(tile.Water(x, y))
                 else:
-                    self.tiles[i].append(tile.Plain(x, y)) 
-        """self.tiles = numpy.empty((0,Map.column_count))
-        temp = numpy.empty((0,Map.column_count))
+                    self.tiles[i].append(tile.Plain(x, y)) """
+        self.tiles = numpy.empty([0,Map.column_count])
+        temp = numpy.empty([0,Map.column_count])
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 x = i * 64 + Map.mapX
@@ -41,13 +41,14 @@ class Map:
                     temp = numpy.append(temp, tile.Water(x, y))
                 else:
                     temp = numpy.append(temp, tile.Plain(x, y))
-        self.tiles = numpy.append(self.tiles, temp)  """
-        #Attempted to make numpy matrix play with my tiles, but it did play well with subclasses
-
+            self.tiles = numpy.vstack((self.tiles, temp)) 
+            temp = numpy.empty([0,Map.column_count]) 
+        #Attempted to make numpy matrix play with my tiles, but it didn't play well with subclasses
+        print(self.tiles)
     def render_map(self,screen):
-        for i in range(Map.column_count):
-            for j in range(Map.row_count):
-                self.tiles[i][j].show_tile(screen)
+        for j in range(Map.column_count):
+            for i in range(Map.row_count):
+                self.tiles[i, j].show_tile(screen)
 
 class Grid:
     #Creates a second grid of the same size as the map
@@ -59,7 +60,7 @@ class Grid:
 
     #Creates and stores an array of empty space and units that are in play
     def __init__(self):
-        self.units = []
+        """self.units = []
         for i in range(Grid.column_count):
             self.units.append([])
             for j in range(Grid.row_count):
@@ -67,9 +68,19 @@ class Grid:
                 y = j * 64 + Map.mapY
                 #temp: randomly assign units
 
-                self.units[i].append(Units.unit.Group())
+                self.units[i].append(Units.unit.Group())"""
+        self.units = numpy.empty([0, Map.column_count])
+        temp = numpy.empty([0, Map.column_count])
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                x = i * 64 + Map.mapX
+                y = j * 64 + Map.mapY
+                number = random.random()
+                temp = numpy.append(temp, Units.unit.Group())
+            self.units = numpy.vstack((self.units, temp)) 
+            temp = numpy.empty([0,Map.column_count]) 
     
     def render_units(self, screen):
-        for i in range(Map.column_count):
-            for j in range(Map.row_count):
-                self.units[i][j].show_group(screen)
+        for j in range(Map.column_count):
+            for i in range(Map.row_count):
+                self.units[i, j].show_group(screen)
