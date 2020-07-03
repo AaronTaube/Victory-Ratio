@@ -76,7 +76,7 @@ class Grid:
                 x = i * 64 + Map.mapX
                 y = j * 64 + Map.mapY
                 number = random.random()
-                temp = numpy.append(temp, Units.unit.Group())
+                temp = numpy.append(temp, Units.unit.Group(x, y))
             self.units = numpy.vstack((self.units, temp)) 
             temp = numpy.empty([0,Map.column_count]) 
     

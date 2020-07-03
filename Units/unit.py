@@ -7,10 +7,13 @@ class Unit:
         self.unitY = 0
         self.unit_type = "unknown"
         self.unitImg = None
+    def show_unit(self, x, y, screen):
+        screen.blit(self.unitImg, (x + self.unitX, y + self.unitY))
+        
 
 class Axe(Unit):
     #subclass for Axe soldiers
-    def __init__(self, player):
+    def __init__(self, player = 1):
         Unit.__init__(self)
         self.unit_type = "axe"
         #dict to show which units this soldier gets higher victory chances against
@@ -66,9 +69,11 @@ class Sword(Unit):
 
 class Group:
     #collection of units located in a tile
-    def __init__(self):
+    def __init__(self, x, y):
         self.units = []
-        self.count = 0    
+        self.count = 0   
+        self.groupX = x
+        self.groupY = y 
     def add_unit(self, unit):
         if self.count < 9:
             self.count = self.count + 1
@@ -78,6 +83,8 @@ class Group:
         self.count = self.count - 1
     def show_group(self,screen):
         self.position_units()
+        for unit in self.units:
+            unit.show_unit(groupX, groupY, screen)
     def position_units(self):
         #if no units present, skip
         if self.count <= 0:
