@@ -2,7 +2,7 @@ import pygame
 
 class Unit:
     #Base class for soldiers
-    def __init__(self):
+    def __init__(self, player = 1):
         self.unitX = 0
         self.unitY = 0
         self.unit_type = "unknown"
@@ -32,7 +32,7 @@ class Axe(Unit):
 
 class Spear(Unit):
     #subclass for Spear soldiers
-    def __init__(self, player):
+    def __init__(self, player = 1):
         Unit.__init__(self)
         self.unit_type = "spear"
         #dict to show which units this soldier gets higher victory chances against
@@ -50,7 +50,7 @@ class Spear(Unit):
             self.unitImg == pygame.image.load('Images\\Soldiers\\SoldierNotFound.png')
 class Sword(Unit):
     #subclass for Sword soldiers
-    def __init__(self, player):
+    def __init__(self, player = 1):
         Unit.__init__(self)
         self.unit_type = "sword"
         #dict to show which units this soldier gets higher victory chances against
@@ -84,7 +84,7 @@ class Group:
     def show_group(self,screen):
         self.position_units()
         for unit in self.units:
-            unit.show_unit(groupX, groupY, screen)
+            unit.show_unit(self.groupX, self.groupY, screen)
     def position_units(self):
         #if no units present, skip
         if self.count <= 0:

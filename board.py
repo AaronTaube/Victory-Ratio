@@ -1,5 +1,5 @@
 import tile
-import Units.unit
+import Units.unit as unit
 import random
 import numpy
 class Map:
@@ -76,7 +76,7 @@ class Grid:
                 x = i * 64 + Map.mapX
                 y = j * 64 + Map.mapY
                 number = random.random()
-                temp = numpy.append(temp, Units.unit.Group(x, y))
+                temp = numpy.append(temp, unit.Group(x, y))
             self.units = numpy.vstack((self.units, temp)) 
             temp = numpy.empty([0,Map.column_count]) 
     
@@ -84,3 +84,46 @@ class Grid:
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.units[i, j].show_group(screen)
+
+class Pool:
+    #Creates the Unit Pool for each player
+    #Currently creates a set pool for each player
+    def __init__(self, player):
+        self.player = player
+        self.groups = []
+        self.populate_pool()
+
+    def populate_pool(self):
+        y = 0
+        if self.player == 1:
+            x = 0
+        else:
+            x = 64 * (Map.column_count + 1)
+        for j in range (0, 3):
+            unit_group = unit.Group(x,y)
+            for i in range(0, 5):
+                unit_group.add_unit(unit.Axe(self.player))
+            self.groups.append(unit_group)
+            y = y + 64
+        for j in range (0, 3):
+            unit_group = unit.Group(x,y)
+            for i in range(0, 5):
+                unit_group.add_unit(unit.Sword(self.player))
+            self.groups.append(unit_group)
+            y = y + 64
+        for j in range (0, 3):
+            unit_group = unit.Group(x,y)
+            for i in range(0, 5):
+                unit_group.add_unit(unit.Spear(self.player))
+            self.groups.append(unit_group)
+            y = y + 64
+
+    def render_units(self, screen):
+        for i in self.groups:
+            i.show_group(screen)
+        
+        
+        
+
+        
+

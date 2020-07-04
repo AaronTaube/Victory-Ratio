@@ -8,6 +8,8 @@ screen = pygame.display.set_mode((960, 640))
 #Currently can store a 13x10 grid, allowing for a small amount of space on sides
 game_map = board.Map()
 play_grid = board.Grid()
+player1_pool = board.Pool(1)
+player2_pool = board.Pool(2)
 #Boolean handlers
 running = True
 while running:
@@ -15,6 +17,8 @@ while running:
     screen.fill((0,0,0))
     game_map.render_map(screen)
     play_grid.render_units(screen)
+    player1_pool.render_units(screen)
+    player2_pool.render_units(screen)
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
