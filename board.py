@@ -84,6 +84,12 @@ class Grid:
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.units[i, j].show_group(screen)
+class Valid_Moves:
+    def __init__(self):
+        self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
+class Valid_Attacks:
+    def __init__(self):
+        self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
 
 class Pool:
     #Creates the Unit Pool for each player
@@ -92,13 +98,15 @@ class Pool:
         self.player = player
         self.groups = []
         self.populate_pool()
-
+        self.x = 0 #have a separate self.x as is needed for other class
     def populate_pool(self):
         y = 0
         if self.player == 1:
-            x = 0
+            self.x = 0
+            x = self.x
         else:
-            x = 64 * (Map.column_count + 1)
+            self.x = 64 * (Map.column_count + 1)
+            x = self.x
         for j in range (0, 3):
             unit_group = unit.Group(x,y)
             for i in range(0, 5):
