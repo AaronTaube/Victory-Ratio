@@ -10,7 +10,9 @@ class Tile:
     def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
         #print("show")
-
+    def assign_coordinate(self, x, y):
+        self.indexX = x
+        self.indexY = y
 
 class Plain(Tile):
     #Plain style of tile

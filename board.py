@@ -43,8 +43,10 @@ class Map:
                     temp = numpy.append(temp, tile.Plain(x, y))
             self.tiles = numpy.vstack((self.tiles, temp)) 
             temp = numpy.empty([0,Map.column_count]) 
-        #Attempted to make numpy matrix play with my tiles, but it didn't play well with subclasses
-        print(self.tiles)
+        #for ease, assign coordinate of each tile separately
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.tiles[j,i].assign_coordinate(j,i)
     def render_map(self,screen):
         for j in range(Map.column_count):
             for i in range(Map.row_count):
