@@ -13,6 +13,12 @@ class Tile:
     def assign_coordinate(self, x, y):
         self.indexX = x
         self.indexY = y
+    def check_collision(self, pos):
+        posX, posY = pos
+        if posX < self.tileX + 64  and posX > self.tileX:
+            if posY < self.tileY + 64 and posY > self.tileY:
+                return True
+        return False
 
 class Plain(Tile):
     #Plain style of tile

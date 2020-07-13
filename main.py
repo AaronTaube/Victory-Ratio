@@ -42,6 +42,10 @@ def check_selection_phase(pos):
         check_unit_selection(pos, player1_pool)
     elif player2_selection_phase:
         check_unit_selection(pos, player2_pool)
+    for row in game_map.tiles:
+        for cell in row:
+            if cell.check_collision(pos):
+                print(cell.indexX, cell.indexY)
 
 def check_unit_selection(pos, pool):
     #check for collision based on pool position
