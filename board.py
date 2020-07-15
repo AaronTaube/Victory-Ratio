@@ -96,7 +96,7 @@ class Valid_Attacks:
 class Pool:
     #Creates the Unit Pool for each player
     #Currently creates a set pool for each player
-    def __init__(self, player):
+    '''def __init__(self, player):
         self.player = player
         self.groups = []
         self.populate_pool()
@@ -130,8 +130,41 @@ class Pool:
 
     def render_units(self, screen):
         for i in self.groups:
-            i.show_group(screen)
+            i.show_group(screen)'''
+    def __init__(self, player):
+        self.player = player
+        self.options = []
+        self.populate_pools()
+        self.x = 0
+        self.axe_count = 15
+        self.spear_count = 15
+        self.sword_count = 15
         
+    def populate_pool(self):
+        y = 0
+        if self.player == 1:
+            self.x = 0
+            x = self.x
+            self.options.append(unit.Axe())
+            self.options.append(unit.Sword())
+            self.options.append(unit.Spear())
+        else:
+            self.x = 64 * (Map.column_count + 1)
+            x = self.x
+            self.options.append(unit.Axe(2))
+            self.options.append(unit.Sword(2))
+            self.options.append(unit.Spear(2))
+    def render_pool(self, screen):
+        tileY = 0
+        unitY = 16
+        unitX = self.x + 16
+        for i in self.options:
+            screen.blit(self.unitImg, (x + self.unitX, y + self.unitY))
+                
+
+        
+
+       
         
         
 

@@ -76,8 +76,10 @@ while running:
     #Render all interface by layer
     game_map.render_map(screen)
     play_grid.render_units(screen)
-    player1_pool.render_units(screen)
-    player2_pool.render_units(screen)
+    #player1_pool.render_units(screen)
+    #player2_pool.render_units(screen)
+    player1_pool.render_pool(screen)
+    player2_pool.render_pool(screen)
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

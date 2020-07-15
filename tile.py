@@ -41,4 +41,8 @@ class Forest(Tile):
         #Forest image
         self.tileImg = pygame.image.load('Images\\Tiles\\forest_tile.png')
         self.tile_bonus = .25
-    
+class Selection(Tile):
+    #Grid tile for unit pool
+    def __init__(self, x, y):
+        Tile.__init__(self,x,y)
+        self.tileImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')
