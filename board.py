@@ -134,7 +134,7 @@ class Pool:
     def __init__(self, player):
         self.player = player
         self.options = []
-        self.populate_pools()
+        self.populate_pool()
         self.x = 0
         self.axe_count = 15
         self.spear_count = 15
@@ -160,6 +160,52 @@ class Pool:
         unitX = self.x + 16
         for i in self.options:
             screen.blit(self.unitImg, (x + self.unitX, y + self.unitY))
+
+class Unit_Selection:
+    def __init__(self, player, unit_type, count, x, y):
+        self.player = player
+        self.unit_type = unit_type
+        self.x = x
+        self.y = y
+        self.is_selected = False
+        self.count = count
+        
+        #set scale of unit sprite for selection
+        scale = 3
+
+        #Set outer border image
+        self.outlineImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')
+        #set image for unit type of selection
+        if unit_type == 'axe':
+            if player == 1:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\BlueAxeIdle.png')
+            elif player == 2:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\RedAxeIdle.png')
+
+        if unit_type == 'sword':
+            if player == 1:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSwordIdle.png')
+            elif player == 2:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\RedSwordIdle.png')
+        
+        if unit_type == 'spear':
+            if player == 1:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSpearIdle.png')
+            elif player == 2:
+                self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
+
+        self.unitImg = pygame.transform.rotozoom(self.unitImg, 0, scale)
+    def render_selection(self, screen):
+        #Set offset for unit type
+        unit_offsetX = 12
+        unit_offsetY = 12
+
+        #render selection outline first
+        screen.blit(self.outlineImg, (self.x, self.y))
+
+        #render unit type
+        screen.blit(self.unitImg, (self.x + unit_offsetX, self.y + unit_offsetY))
+        
                 
 
         
