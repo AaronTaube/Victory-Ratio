@@ -175,6 +175,9 @@ class Pool:
             screen.blit(self.unitImg, (self.x + self.unitX, tileY + self.unitY))'''
         for i in self.options:
             i.render_selection(screen)
+    def clear_selection(self):
+        for cell in self.options:
+            cell.is_selected = False
 
 class Unit_Selection:
     def __init__(self, player, unit_type, count, x, y):
@@ -184,7 +187,6 @@ class Unit_Selection:
         self.y = y
         self.is_selected = False
         self.count = count
-        self.is_selected = True
         
         #set scale of unit sprite for selection
         scale = 2
@@ -237,7 +239,16 @@ class Unit_Selection:
 
         #render count
         screen.blit(self.text, (self.x + text_offsetX, self.y + text_offsetY))
-        
+    
+    def check_collision(self, pos):
+        posX, posY = pos
+        if posX < self.x + 64  and posX > self.x:
+            if posY < self.y + 64 and posY > self.y:
+                return True
+        return False
+    
+    def set_selected(self):
+        self.is_selected = True
         
                 
 

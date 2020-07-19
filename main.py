@@ -39,25 +39,34 @@ def check_for_selection(pos):
 def check_selection_phase(pos):
     #filter which player is selecting
     if player1_selection_phase:
-        check_unit_selection(pos, player1_pool)
+        #check_unit_selection(pos, player1_pool)
+        for cell in player1_pool.options:
+            if cell.check_collision(pos):
+                player1_pool.clear_selection()
+                cell.set_selected()
+
     elif player2_selection_phase:
-        check_unit_selection(pos, player2_pool)
+        #check_unit_selecton(pos, player2_pool)
+        for cell in player2_pool.options:
+            if cell.check_collision(pos):
+                player2_pool.clear_selection()
+                cell.set_selected()
     for row in game_map.tiles:
         for cell in row:
             if cell.check_collision(pos):
                 print(cell.indexX, cell.indexY)
 
-def check_unit_selection(pos, pool):
+'''def check_unit_selection(pos, pool):
     #check for collision based on pool position
     x = pool.x
     y = 0
     posX, posY = pos
-    groups = pool.groups
-    for i in range(0, len(groups)):
+    options = pool.options
+    for i in range(0, len(options)):
         y = i * 64
         if isCollision(x, y, posX, posY):
             print("x",x, "y", y)
-        print(i)
+        #print(i)'''
         
 def isCollision(selectionX, selectionY, posX, posY):
     distance = math.sqrt(math.pow(selectionX - posX, 2) + math.pow(selectionY - posY, 2))
