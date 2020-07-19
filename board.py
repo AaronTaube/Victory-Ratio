@@ -92,6 +92,30 @@ class Grid:
 class Valid_Moves:
     def __init__(self):
         self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
+        self.tileImg = pygame.image.load('Images\\Tiles\\movement_selection.png')
+
+    def player1_valid_placement(self, board, groups, unit_type):
+        for j in range(Map.row_count):
+            for i in range(2):
+                #Set true for placeable tiles that aren't water tiles
+                #TODO set false if tile is full or a different unit type
+                if board[j,i].is_blocker == False:
+                    self.choices[j,i] = True
+    
+    def player2_valid_placement(self, board, groups, unit_type):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count - 2, Map.column_count):
+                #Set true for placeable tiles that aren't water tiles
+                #TODO set false if tile is full or a different unit type
+                if board[j,i].is_blocker == False:
+                    self.choices[j,i] = True
+    
+    def render_moves(self, screen):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.choices[j,i]:
+                    screen.blit(self.tileImg, (64+ 64*i, 64*j))
+
 class Valid_Attacks:
     def __init__(self):
         self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
@@ -178,6 +202,17 @@ class Pool:
     def clear_selection(self):
         for cell in self.options:
             cell.is_selected = False
+    
+    def unit_selected(self):
+        for cell in self.options:
+            if cell.is_selected:
+                return True
+        return False
+    def get_selected(self):
+        for cell in self.options:
+            if cell.is_selected:
+                return cell.unit_type
+        return None
 
 class Unit_Selection:
     def __init__(self, player, unit_type, count, x, y):

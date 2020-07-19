@@ -7,6 +7,7 @@ class Tile:
         self.tileY = y
         self.tile_bonus = 0
         self.tileImg = pygame.image.load('Images\\Tiles\\unfound_tile.png')
+        self.is_blocker = False
     def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
         #print("show")
@@ -33,6 +34,7 @@ class Water(Tile):
         Tile.__init__(self,x,y)
         #Water image
         self.tileImg = pygame.image.load('Images\\Tiles\\water_tile.png')
+        self.is_blocker = True
 
 class Forest(Tile):
     #Forest style of tile

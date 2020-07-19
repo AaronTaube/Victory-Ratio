@@ -1,6 +1,7 @@
 import pygame
 import board
 import math
+import Units.unit as unit
 #Initialize the pygame
 pygame.init()
 
@@ -19,12 +20,17 @@ selected_unit = None
 selected_move = None
 selected_attack = None
 
-#handle game states
+#Handle game states
+#Begin and End Phase
 game_begin_phase = False
 game_end_phase = False
+#Selection phase
 unit_selection_phase = True
 player1_selection_phase = True
 player2_selection_phase = False
+placed_units = 0
+chosen_unit = None
+#Movement and combat phases
 player1_move_phase = False
 player2_move_phase = False
 combat_phase = False
@@ -38,23 +44,36 @@ def check_for_selection(pos):
 
 def check_selection_phase(pos):
     #filter which player is selecting
+
+    #confirm which unit is being selected
     if player1_selection_phase:
-        #check_unit_selection(pos, player1_pool)
         for cell in player1_pool.options:
             if cell.check_collision(pos):
                 player1_pool.clear_selection()
                 cell.set_selected()
-
+        #highlight tiles that units can be placed in
+        if player1_pool.unit_selected():
+            chosen_unit = player1_pool.get_selected()
+            movement_grid.player1_valid_placement(game_map.tiles, play_grid.units, chosen_unit)
     elif player2_selection_phase:
-        #check_unit_selecton(pos, player2_pool)
+        #confirm which unit is being selected
         for cell in player2_pool.options:
             if cell.check_collision(pos):
                 player2_pool.clear_selection()
                 cell.set_selected()
+        #highlight tiles that units can be placed in
+        if player2_pool.unit_selected():
+            chosen_unit = player2_pool.get_selected()
+            movement_grid.player2_valid_placement(game_map.tiles, play_grid.units, chosen_unit)
+    #if no unit selected, exit to minimize work
+    if chosen_unit == None:
+        return
+    #place units
     for row in game_map.tiles:
         for cell in row:
             if cell.check_collision(pos):
-                print(cell.indexX, cell.indexY)
+                if movement_grid.choices[cell.indexX, cell.indexY]:
+                    play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
 
 '''def check_unit_selection(pos, pool):
     #check for collision based on pool position
@@ -84,6 +103,7 @@ while running:
     screen.fill((0,0,0))
     #Render all interface by layer
     game_map.render_map(screen)
+    movement_grid.render_moves(screen)
     play_grid.render_units(screen)
     #player1_pool.render_units(screen)
     #player2_pool.render_units(screen)
