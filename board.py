@@ -2,6 +2,9 @@ import tile
 import Units.unit as unit
 import random
 import numpy
+import pygame
+
+
 class Map:
     #Positioning Data
     #create grid
@@ -134,14 +137,17 @@ class Pool:
     def __init__(self, player):
         self.player = player
         self.options = []
-        self.populate_pool()
-        self.x = 0
+        if self.player == 1:
+            self.x = 0
+        else:
+            self.x = (Map.column_count + 1) * 64
         self.axe_count = 15
         self.spear_count = 15
         self.sword_count = 15
+        self.populate_pool()
         
     def populate_pool(self):
-        y = 0
+        '''y = 0
         if self.player == 1:
             self.x = 0
             x = self.x
@@ -153,13 +159,22 @@ class Pool:
             x = self.x
             self.options.append(unit.Axe(2))
             self.options.append(unit.Sword(2))
-            self.options.append(unit.Spear(2))
+            self.options.append(unit.Spear(2))'''
+        self.axe_option = Unit_Selection(self.player, "axe", self.axe_count, self.x, 0)
+        self.sword_option = Unit_Selection(self.player, "sword", self.sword_count, self.x, 64)
+        self.spear_option = Unit_Selection(self.player, "spear", self.spear_count, self.x, 128)
+        self.options.append(self.axe_option)
+        self.options.append(self.sword_option)
+        self.options.append(self.spear_option)
+        
     def render_pool(self, screen):
-        tileY = 0
+        '''tileY = 0
         unitY = 16
         unitX = self.x + 16
         for i in self.options:
-            screen.blit(self.unitImg, (x + self.unitX, y + self.unitY))
+            screen.blit(self.unitImg, (self.x + self.unitX, tileY + self.unitY))'''
+        for i in self.options:
+            i.render_selection(screen)
 
 class Unit_Selection:
     def __init__(self, player, unit_type, count, x, y):
@@ -169,12 +184,16 @@ class Unit_Selection:
         self.y = y
         self.is_selected = False
         self.count = count
+        self.is_selected = True
         
         #set scale of unit sprite for selection
-        scale = 3
+        scale = 2
 
         #Set outer border image
         self.outlineImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')
+
+        #set highlight image
+        self.selectionImg = pygame.image.load('Images\\Tiles\\movement_selection.png')
         #set image for unit type of selection
         if unit_type == 'axe':
             if player == 1:
@@ -193,18 +212,32 @@ class Unit_Selection:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSpearIdle.png')
             elif player == 2:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
-
         self.unitImg = pygame.transform.rotozoom(self.unitImg, 0, scale)
-    def render_selection(self, screen):
-        #Set offset for unit type
-        unit_offsetX = 12
-        unit_offsetY = 12
 
+        #Set the text for remaining units in selection
+        font = pygame.font.Font('PressStart2P-Regular.ttf', 12)
+        yellow = (255,255,0)
+        self.text = font.render(str(self.count), True, yellow)
+
+    def render_selection(self, screen):
+        #Set offset for unit type and text
+        unit_offsetX = -12
+        unit_offsetY = -6
+        text_offsetX = 38
+        text_offsetY = 48
         #render selection outline first
         screen.blit(self.outlineImg, (self.x, self.y))
 
+        #render the highlight if selected
+        if self.is_selected:
+            screen.blit(self.selectionImg, (self.x, self.y))
+
         #render unit type
         screen.blit(self.unitImg, (self.x + unit_offsetX, self.y + unit_offsetY))
+
+        #render count
+        screen.blit(self.text, (self.x + text_offsetX, self.y + text_offsetY))
+        
         
                 
 
