@@ -28,7 +28,7 @@ game_end_phase = False
 unit_selection_phase = True
 player1_selection_phase = True
 player2_selection_phase = False
-placed_units = 0
+units_to_place = 9
 chosen_unit = None
 #Movement and combat phases
 player1_move_phase = False
@@ -43,6 +43,13 @@ def check_for_selection(pos):
     return
 
 def check_selection_phase(pos):
+    #grab needed globals
+    global chosen_unit
+    global units_to_place
+    global player1_selection_phase
+    global player2_selection_phase
+    global unit_selection_phase
+    global player1_move_phase
     #filter which player is selecting
 
     #confirm which unit is being selected
@@ -50,11 +57,14 @@ def check_selection_phase(pos):
         for cell in player1_pool.options:
             if cell.check_collision(pos):
                 player1_pool.clear_selection()
-                cell.set_selected()
+                
+                if cell.count > 0:
+                    cell.set_selected()
         #highlight tiles that units can be placed in
         if player1_pool.unit_selected():
             chosen_unit = player1_pool.get_selected()
-            movement_grid.player1_valid_placement(game_map.tiles, play_grid.units, chosen_unit)
+            movement_grid.clear()
+            movement_grid.player1_valid_placement(game_map.tiles, play_grid.units, chosen_unit.unit_type)
     elif player2_selection_phase:
         #confirm which unit is being selected
         for cell in player2_pool.options:
@@ -64,7 +74,7 @@ def check_selection_phase(pos):
         #highlight tiles that units can be placed in
         if player2_pool.unit_selected():
             chosen_unit = player2_pool.get_selected()
-            movement_grid.player2_valid_placement(game_map.tiles, play_grid.units, chosen_unit)
+            movement_grid.player2_valid_placement(game_map.tiles, play_grid.units, chosen_unit.unit_type)
     #if no unit selected, exit to minimize work
     if chosen_unit == None:
         return
@@ -73,7 +83,47 @@ def check_selection_phase(pos):
         for cell in row:
             if cell.check_collision(pos):
                 if movement_grid.choices[cell.indexX, cell.indexY]:
-                    play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
+                    place_unit(cell.indexX, cell.indexY)
+                    units_to_place = units_to_place - 1
+                    chosen_unit.reduce_count()
+                    if chosen_unit.count <= 0:
+                        player1_pool.clear_selection()
+                        player2_pool.clear_selection()
+                        chosen_unit = None
+                    #play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
+    #Handle swapping of player phase
+    if units_to_place <= 0:
+        player1_selection_phase = not player1_selection_phase
+        player2_selection_phase = not player2_selection_phase
+        units_to_place = 9
+        chosen_unit = None
+        player1_pool.clear_selection()
+        player2_pool.clear_selection()
+        movement_grid.clear()
+        if player1_pool.get_count() <= 0 and player2_pool.get_count() <= 0:
+            player1_selection_phase = False
+            player2_selection_phase = False
+            unit_selection_phase = False
+            player1_move_phase = True
+
+def place_unit(x, y):
+    unit_type = chosen_unit.unit_type
+    if player1_selection_phase:
+        if unit_type == 'axe':
+            play_grid.units[x, y].add_unit(unit.Axe())
+        if unit_type == 'sword':
+            play_grid.units[x, y].add_unit(unit.Sword())
+        if unit_type == 'spear':
+            play_grid.units[x, y].add_unit(unit.Spear())
+
+    if player2_selection_phase:
+        if unit_type == 'axe':
+            play_grid.units[x, y].add_unit(unit.Axe(2))
+        if unit_type == 'sword':
+            play_grid.units[x, y].add_unit(unit.Sword(2))
+        if unit_type == 'spear':
+            play_grid.units[x, y].add_unit(unit.Spear(2))
+
 
 '''def check_unit_selection(pos, pool):
     #check for collision based on pool position
@@ -105,10 +155,9 @@ while running:
     game_map.render_map(screen)
     movement_grid.render_moves(screen)
     play_grid.render_units(screen)
-    #player1_pool.render_units(screen)
-    #player2_pool.render_units(screen)
-    player1_pool.render_pool(screen)
-    player2_pool.render_pool(screen)
+    if unit_selection_phase:
+        player1_pool.render_pool(screen)
+        player2_pool.render_pool(screen)
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

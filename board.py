@@ -9,7 +9,7 @@ class Map:
     #Positioning Data
     #create grid
     column_count = 13
-    row_count = 10
+    row_count = 9
     #tiles = []
     #position grid
     mapX = 64
@@ -101,7 +101,11 @@ class Valid_Moves:
                 #TODO set false if tile is full or a different unit type
                 if board[j,i].is_blocker == False:
                     self.choices[j,i] = True
-    
+                if len(groups[j,i].units) >= 9:
+                    self.choices[j,i] = False
+                if len(groups[j,i].units) > 0:
+                    if groups[j,i].units[0].unit_type != unit_type:
+                        self.choices[j,i] = False
     def player2_valid_placement(self, board, groups, unit_type):
         for j in range(Map.row_count):
             for i in range(Map.column_count - 2, Map.column_count):
@@ -109,7 +113,16 @@ class Valid_Moves:
                 #TODO set false if tile is full or a different unit type
                 if board[j,i].is_blocker == False:
                     self.choices[j,i] = True
-    
+                if len(groups[j,i].units) >= 9:
+                    self.choices[j,i] = False
+                if len(groups[j,i].units) > 0:
+                    if groups[j,i].units[0].unit_type != unit_type:
+                        self.choices[j,i] = False
+
+    def clear(self):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.choices[j,i] = False
     def render_moves(self, screen):
         for j in range(Map.row_count):
             for i in range(Map.column_count):
@@ -211,8 +224,13 @@ class Pool:
     def get_selected(self):
         for cell in self.options:
             if cell.is_selected:
-                return cell.unit_type
+                return cell
         return None
+    def get_count(self):
+        count = 0
+        for cell in self.options:
+            count = count + cell.count
+        return count
 
 class Unit_Selection:
     def __init__(self, player, unit_type, count, x, y):
@@ -232,19 +250,19 @@ class Unit_Selection:
         #set highlight image
         self.selectionImg = pygame.image.load('Images\\Tiles\\movement_selection.png')
         #set image for unit type of selection
-        if unit_type == 'axe':
+        if unit_type == "axe":
             if player == 1:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueAxeIdle.png')
             elif player == 2:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedAxeIdle.png')
 
-        if unit_type == 'sword':
+        if unit_type == "sword":
             if player == 1:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSwordIdle.png')
             elif player == 2:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSwordIdle.png')
         
-        if unit_type == 'spear':
+        if unit_type == "spear":
             if player == 1:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSpearIdle.png')
             elif player == 2:
@@ -252,9 +270,13 @@ class Unit_Selection:
         self.unitImg = pygame.transform.rotozoom(self.unitImg, 0, scale)
 
         #Set the text for remaining units in selection
-        font = pygame.font.Font('PressStart2P-Regular.ttf', 12)
-        yellow = (255,255,0)
-        self.text = font.render(str(self.count), True, yellow)
+        self.font = pygame.font.Font('PressStart2P-Regular.ttf', 12)
+        self.yellow = (255,255,0)
+        self.text = self.font.render(str(self.count), True, self.yellow)
+
+    def reduce_count(self):
+        self.count = self.count - 1
+        self.text = self.font.render(str(self.count), True, self.yellow)
 
     def render_selection(self, screen):
         #Set offset for unit type and text

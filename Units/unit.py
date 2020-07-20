@@ -92,35 +92,35 @@ class Group:
         #Set all possible positions within tile for unit
         for x in range(0, self.count):
             if x == 0:
-                self.units[x].unitX = 24
-                self.units[x].unitY = 8
-            if x == 1:
                 self.units[x].unitX = 12
-                self.units[x].unitY = 16
+                self.units[x].unitY = 32
+            if x == 1:
+                self.units[x].unitX = 0
+                self.units[x].unitY = 24
             if x == 2:
-                self.units[x].unitX = 36
-                self.units[x].unitY = 16
-            if x == 3:
                 self.units[x].unitX = 24
                 self.units[x].unitY = 24
+            if x == 3:
+                self.units[x].unitX = 12
+                self.units[x].unitY = 16
             if x == 4:
-                self.units[x].unitX = 12
-                self.units[x].unitY = 32
+                self.units[x].unitX = 0
+                self.units[x].unitY = 8
             if x == 5:
-                self.units[x].unitX = 36
-                self.units[x].unitY = 32
+                self.units[x].unitX = 24
+                self.units[x].unitY = 8
             if x == 6:
-                self.units[x].unitX = 24
-                self.units[x].unitY = 40
-            if x == 7:
                 self.units[x].unitX = 12
-                self.units[x].unitY = 48
+                self.units[x].unitY = 0
+            if x == 7:
+                self.units[x].unitX = 0
+                self.units[x].unitY = -8
             if x == 8:
-                self.units[x].unitX = 36
-                self.units[x].unitY = 48
-            if x == 9:
                 self.units[x].unitX = 24
-                self.units[x].unitY = 56
+                self.units[x].unitY = -8
+            if x == 9:
+                self.units[x].unitX = 12
+                self.units[x].unitY = -24
     
 
 
