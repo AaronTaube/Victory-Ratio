@@ -22,7 +22,7 @@ selected_attack = None
 
 #Handle game states
 #Begin and End Phase
-game_begin_phase = False
+game_on_phase = False
 game_end_phase = False
 #Selection phase
 unit_selection_phase = True
@@ -30,19 +30,22 @@ player1_selection_phase = True
 player2_selection_phase = False
 units_to_place = 9
 chosen_unit = None
+
 #Movement and combat phases
 player1_move_phase = False
 player2_move_phase = False
 combat_phase = False
-
-
+chosen_group = None
+chosen_destination = None
+chosen_attack = None
+#Unit Placement Handlers
 def check_for_selection(pos):
     #Check for pool selection if it's that phase
     if unit_selection_phase:
-        check_selection_phase(pos)
+        handle_selection_phase(pos)
     return
 
-def check_selection_phase(pos):
+def handle_selection_phase(pos):
     #grab needed globals
     global chosen_unit
     global units_to_place
@@ -50,6 +53,7 @@ def check_selection_phase(pos):
     global player2_selection_phase
     global unit_selection_phase
     global player1_move_phase
+    global game_on_phase
     #filter which player is selecting
 
     #confirm which unit is being selected
@@ -104,6 +108,7 @@ def check_selection_phase(pos):
             player1_selection_phase = False
             player2_selection_phase = False
             unit_selection_phase = False
+            game_on_phase = True
             player1_move_phase = True
 
 def place_unit(x, y):
@@ -123,29 +128,81 @@ def place_unit(x, y):
             play_grid.units[x, y].add_unit(unit.Sword(2))
         if unit_type == 'spear':
             play_grid.units[x, y].add_unit(unit.Spear(2))
+#Gameplay Handlers
+def check_for_gameplay(pos):
+    if game_on_phase:
+        gameplay_phase(pos)
+def gameplay_phase(pos):
+    #Grab GLobals
+    global game_on_phase
+    global player1_move_phase
+    global player2_move_phase
+    global combat_phase
+    global chosen_group
+    global chosen_destination
+    global chosen_attack
+    #Select unit
+    if combat_phase == False: #and chosen_group == None:
+        for row in game_map.tiles:
+            for cell in row:
+                if cell.check_collision(pos):
+                    if len(play_grid.units[cell.indexX, cell.indexY].units) > 0:
+                        #confirm unit selected is selectable by active player
+                        if play_grid.units[cell.indexX, cell.indexY].units[0].player == 1 and player1_move_phase:
+                            chosen_group = play_grid.units[cell.indexX, cell.indexY]
+                        elif play_grid.units[cell.indexX, cell.indexY].units[0].player == 2 and player2_move_phase:
+                            chosen_group = play_grid.units[cell.indexX, cell.indexY]
+                        #if choice valid, set movement options
+                        if chosen_group != None:
+                            movement_grid.clear()
+                            movement_grid.set_move_options(cell.indexX, cell.indexY, game_map.tiles, play_grid.units)
+                        return #Done for this click
+
+    if chosen_group != None and combat_phase == False:
+        for row in game_map.tiles:
+            for cell in row:
+                if cell.check_collision(pos):
+                    if(movement_grid.choices[cell.indexX, cell.indexY]):
+                        print(cell.indexX, cell.indexY, "made it", player1_move_phase, player2_move_phase)
+                        unit_type = chosen_group.unit_type
+                        play_grid.units[cell.indexX, cell.indexY].units = chosen_group.units
+                        play_grid.units[cell.indexX, cell.indexY].count = chosen_group.count
+                        chosen_group.units = []
+                        chosen_group.count = 0
+                        movement_grid.clear()
+                        #for i in chosen_group.units:
+                         #   soldier = i.remove_unit()
+
+                            #play_grid.units[cell.indexX, cell.indexY].units.add_unit()
+                    '''if player1_move_phase:
+                        if unit_type == 'axe':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Axe())
+                        if unit_type == 'sword':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
+                        if unit_type == 'spear':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Spear())
+
+                    if player2_move_phase:
+                        if unit_type == 'axe':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Axe(2))
+                        if unit_type == 'sword':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword(2))
+                        if unit_type == 'spear':
+                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Spear(2))
+                    chosen_group.subtract_unit()'''
+                            #play_grid.units[cell.indexX, cell.indexY] = chosen_group
+                    '''if movement_grid.choices[cell.indexX, cell.indexY]:
+                        place_unit(cell.indexX, cell.indexY)
+                        units_to_place = units_to_place - 1
+                        chosen_unit.reduce_count()
+                        if chosen_unit.count <= 0:
+                            player1_pool.clear_selection()
+                            player2_pool.clear_selection()
+                            chosen_unit = None'''
+    return
 
 
-'''def check_unit_selection(pos, pool):
-    #check for collision based on pool position
-    x = pool.x
-    y = 0
-    posX, posY = pos
-    options = pool.options
-    for i in range(0, len(options)):
-        y = i * 64
-        if isCollision(x, y, posX, posY):
-            print("x",x, "y", y)
-        #print(i)'''
-        
-def isCollision(selectionX, selectionY, posX, posY):
-    distance = math.sqrt(math.pow(selectionX - posX, 2) + math.pow(selectionY - posY, 2))
-    if distance < 32:
-        return True
-    else:
-        return False
-
-
-
+#Gameplay Loop
 #Boolean handlers
 running = True
 while running:
@@ -164,7 +221,7 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            
             check_for_selection(pos)
+            check_for_gameplay(pos)
     pygame.display.update()
 

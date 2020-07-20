@@ -7,6 +7,7 @@ class Unit:
         self.unitY = 0
         self.unit_type = "unknown"
         self.unitImg = None
+        self.player = player
     def show_unit(self, x, y, screen):
         screen.blit(self.unitImg, (x + self.unitX, y + self.unitY))
         
@@ -14,7 +15,7 @@ class Unit:
 class Axe(Unit):
     #subclass for Axe soldiers
     def __init__(self, player = 1):
-        Unit.__init__(self)
+        Unit.__init__(self, player)
         self.unit_type = "axe"
         #dict to show which units this soldier gets higher victory chances against
         self.strengths = {
@@ -33,7 +34,7 @@ class Axe(Unit):
 class Spear(Unit):
     #subclass for Spear soldiers
     def __init__(self, player = 1):
-        Unit.__init__(self)
+        Unit.__init__(self, player)
         self.unit_type = "spear"
         #dict to show which units this soldier gets higher victory chances against
         self.strengths = {
@@ -51,7 +52,7 @@ class Spear(Unit):
 class Sword(Unit):
     #subclass for Sword soldiers
     def __init__(self, player = 1):
-        Unit.__init__(self)
+        Unit.__init__(self, player)
         self.unit_type = "sword"
         #dict to show which units this soldier gets higher victory chances against
         self.strengths = {
@@ -74,10 +75,13 @@ class Group:
         self.count = 0   
         self.groupX = x
         self.groupY = y 
+        self.moved = False
+        self.unit_type = None
     def add_unit(self, unit):
         if self.count < 9:
             self.count = self.count + 1
             self.units.append(unit)
+            self.unit_type = unit.unit_type
     def subtract_unit(self, unit):
         self.units.pop()
         self.count = self.count - 1

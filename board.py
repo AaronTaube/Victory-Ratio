@@ -65,15 +65,6 @@ class Grid:
 
     #Creates and stores an array of empty space and units that are in play
     def __init__(self):
-        """self.units = []
-        for i in range(Grid.column_count):
-            self.units.append([])
-            for j in range(Grid.row_count):
-                x = i * 64 + Map.mapX
-                y = j * 64 + Map.mapY
-                #temp: randomly assign units
-
-                self.units[i].append(Units.unit.Group())"""
         self.units = numpy.empty([0, Map.column_count])
         temp = numpy.empty([0, Map.column_count])
         for j in range(Map.row_count):
@@ -118,7 +109,90 @@ class Valid_Moves:
                 if len(groups[j,i].units) > 0:
                     if groups[j,i].units[0].unit_type != unit_type:
                         self.choices[j,i] = False
-
+    def set_move_options(self, row, column, tiles, groups):
+        #set straight movements
+        for i in range(3):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1:
+                if tiles[current_row, column].is_blocker:
+                    break
+                self.choices[current_row, column] = True
+        for i in range(3):
+            current_row = row - 1 - i
+            if current_row >= 0:
+                if tiles[current_row, column].is_blocker:
+                    break
+                self.choices[current_row, column] = True
+        for i in range(3):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1:
+                if tiles[row, current_column].is_blocker:
+                    break
+                self.choices[row, current_column] = True
+        for i in range(3):
+            current_column = column - 1 - i
+            if current_column >= 0:
+                if tiles[row, current_column].is_blocker:
+                    break
+                self.choices[row, current_column] = True
+        #Set Other moves, be sure to cover all possible options, some redundancy necessary
+        #   up to 2 row moves
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column + 1 <= Map.column_count - 1:
+                if tiles[current_row, column + 1].is_blocker:
+                    break
+                self.choices[current_row, column + 1] = True
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column - 1 >= 0:
+                if tiles[current_row, column - 1].is_blocker:
+                    break
+                self.choices[current_row, column - 1] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column + 1 <= Map.column_count - 1:
+                if tiles[current_row, column + 1].is_blocker:
+                    break
+                self.choices[current_row, column + 1] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column - 1 >= 0:
+                if tiles[current_row, column - 1].is_blocker:
+                    break
+                self.choices[current_row, column - 1] = True
+        #   up to 2 Column moves
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row + 1 <= Map.row_count - 1:
+                if tiles[row + 1, current_column].is_blocker:
+                    break
+                self.choices[row + 1, current_column] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row + 1 <= Map.row_count :
+                if tiles[row + 1, current_column].is_blocker:
+                    break
+                self.choices[row + 1, current_column] = True
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row - 1 >= 0:
+                if tiles[row - 1, current_column].is_blocker:
+                    break
+                self.choices[row - 1, current_column] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row - 1 >= 0:
+                if tiles[row - 1, current_column].is_blocker:
+                    break
+                self.choices[row - 1, current_column] = True
+        #clean out spaces where units already exist
+        #   Technically not the most efficient way, but should only be called once per click,
+        #    and easier to read and manage
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if len(groups[j, i].units) > 0:
+                    self.choices[j, i] = False
     def clear(self):
         for j in range(Map.row_count):
             for i in range(Map.column_count):
@@ -136,41 +210,7 @@ class Valid_Attacks:
 class Pool:
     #Creates the Unit Pool for each player
     #Currently creates a set pool for each player
-    '''def __init__(self, player):
-        self.player = player
-        self.groups = []
-        self.populate_pool()
-        self.x = 0 #have a separate self.x as is needed for other class
-    def populate_pool(self):
-        y = 0
-        if self.player == 1:
-            self.x = 0
-            x = self.x
-        else:
-            self.x = 64 * (Map.column_count + 1)
-            x = self.x
-        for j in range (0, 3):
-            unit_group = unit.Group(x,y)
-            for i in range(0, 5):
-                unit_group.add_unit(unit.Axe(self.player))
-            self.groups.append(unit_group)
-            y = y + 64
-        for j in range (0, 3):
-            unit_group = unit.Group(x,y)
-            for i in range(0, 5):
-                unit_group.add_unit(unit.Sword(self.player))
-            self.groups.append(unit_group)
-            y = y + 64
-        for j in range (0, 3):
-            unit_group = unit.Group(x,y)
-            for i in range(0, 5):
-                unit_group.add_unit(unit.Spear(self.player))
-            self.groups.append(unit_group)
-            y = y + 64
-
-    def render_units(self, screen):
-        for i in self.groups:
-            i.show_group(screen)'''
+    
     def __init__(self, player):
         self.player = player
         self.options = []
@@ -178,9 +218,9 @@ class Pool:
             self.x = 0
         else:
             self.x = (Map.column_count + 1) * 64
-        self.axe_count = 15
-        self.spear_count = 15
-        self.sword_count = 15
+        self.axe_count = 9
+        self.spear_count = 0
+        self.sword_count = 0
         self.populate_pool()
         
     def populate_pool(self):
