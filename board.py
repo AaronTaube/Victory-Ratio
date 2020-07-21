@@ -206,6 +206,22 @@ class Valid_Moves:
 class Valid_Attacks:
     def __init__(self):
         self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
+        self.tileImg = pygame.image.load('Images\\Tiles\\attack_selection.png')
+    def set_attack_options(self, origin):
+        originX, originY = origin
+        if originX + 1 <= Map.row_count - 1:
+            self.choices[originX + 1, originY] = True
+        if originX - 1 >= 0:
+            self.choices[originX - 1, originY] = True
+        if originY + 1 <= Map.column_count - 1:
+            self.choices[originX, originY + 1] = True
+        if originY - 1 >= 0:
+            self.choices[originX, originY - 1] = True
+    def render_attacks(self, screen):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.choices[j,i]:
+                    screen.blit(self.tileImg, (64+ 64*i, 64*j))
 
 class Pool:
     #Creates the Unit Pool for each player

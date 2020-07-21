@@ -38,6 +38,7 @@ combat_phase = False
 chosen_group = None
 chosen_destination = None
 chosen_attack = None
+chosen_cell = None
 #Unit Placement Handlers
 def check_for_selection(pos):
     #Check for pool selection if it's that phase
@@ -139,6 +140,7 @@ def gameplay_phase(pos):
     global player2_move_phase
     global combat_phase
     global chosen_group
+    global chosen_cell
     global chosen_destination
     global chosen_attack
     #Select unit
@@ -163,43 +165,25 @@ def gameplay_phase(pos):
             for cell in row:
                 if cell.check_collision(pos):
                     if(movement_grid.choices[cell.indexX, cell.indexY]):
-                        print(cell.indexX, cell.indexY, "made it", player1_move_phase, player2_move_phase)
+                        chosen_cell = cell.indexX, cell.indexY
                         unit_type = chosen_group.unit_type
-                        play_grid.units[cell.indexX, cell.indexY].units = chosen_group.units
-                        play_grid.units[cell.indexX, cell.indexY].count = chosen_group.count
+                        play_grid.units[chosen_cell].units = chosen_group.units
+                        play_grid.units[chosen_cell].count = chosen_group.count
                         chosen_group.units = []
                         chosen_group.count = 0
+                        chosen_group = play_grid.units[chosen_cell]
+                        #prepare for combat phase
                         movement_grid.clear()
-                        #for i in chosen_group.units:
-                         #   soldier = i.remove_unit()
+                        combat_phase = True
+                        attack_grid.set_attack_options(chosen_cell)
+                        return
+    if combat_phase:
+        for row in game_map.tiles:
+            for cell in row:
+                if cell.check_collision(pos):
+                    print('clickityclack')
 
-                            #play_grid.units[cell.indexX, cell.indexY].units.add_unit()
-                    '''if player1_move_phase:
-                        if unit_type == 'axe':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Axe())
-                        if unit_type == 'sword':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
-                        if unit_type == 'spear':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Spear())
-
-                    if player2_move_phase:
-                        if unit_type == 'axe':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Axe(2))
-                        if unit_type == 'sword':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword(2))
-                        if unit_type == 'spear':
-                            play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Spear(2))
-                    chosen_group.subtract_unit()'''
-                            #play_grid.units[cell.indexX, cell.indexY] = chosen_group
-                    '''if movement_grid.choices[cell.indexX, cell.indexY]:
-                        place_unit(cell.indexX, cell.indexY)
-                        units_to_place = units_to_place - 1
-                        chosen_unit.reduce_count()
-                        if chosen_unit.count <= 0:
-                            player1_pool.clear_selection()
-                            player2_pool.clear_selection()
-                            chosen_unit = None'''
-    return
+        
 
 
 #Gameplay Loop
@@ -211,6 +195,7 @@ while running:
     #Render all interface by layer
     game_map.render_map(screen)
     movement_grid.render_moves(screen)
+    attack_grid.render_attacks(screen)
     play_grid.render_units(screen)
     if unit_selection_phase:
         player1_pool.render_pool(screen)
