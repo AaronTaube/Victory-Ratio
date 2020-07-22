@@ -2,6 +2,7 @@ import pygame
 import board
 import math
 import Units.unit as unit
+import gameplay_buttons as gb
 #Initialize the pygame
 pygame.init()
 
@@ -14,7 +15,7 @@ movement_grid = board.Valid_Moves()
 attack_grid = board.Valid_Attacks()
 player1_pool = board.Pool(1)
 player2_pool = board.Pool(2)
-
+pass_button = gb.Pass_Button(screen)
 #handle selections
 selected_unit = None
 selected_move = None
@@ -182,6 +183,16 @@ def gameplay_phase(pos):
             for cell in row:
                 if cell.check_collision(pos):
                     print('clickityclack')
+    #If player chooses for the selected unit to stay in place, switch to combat phase
+    if not combat_phase:
+        if pass_button.check_collision(pos):
+            combat_phase = not combat_phase
+    #If player chooses to skip combat, change to next player's turn
+    if combat_phase:
+        if pass_button.check_collision(pos):
+            player1_move_phase = not player1_move_phase
+            player2_move_phase = not player2_move_phase
+            combat_phase = not combat_phase
 
         
 
@@ -200,6 +211,8 @@ while running:
     if unit_selection_phase:
         player1_pool.render_pool(screen)
         player2_pool.render_pool(screen)
+    if game_on_phase:
+        pass_button.show_button()
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
