@@ -222,6 +222,10 @@ class Valid_Attacks:
             for i in range(Map.column_count):
                 if self.choices[j,i]:
                     screen.blit(self.tileImg, (64+ 64*i, 64*j))
+    def clear(self):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.choices[j,i] = False
 
 class Pool:
     #Creates the Unit Pool for each player

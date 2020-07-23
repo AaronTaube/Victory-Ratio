@@ -159,6 +159,7 @@ def gameplay_phase(pos):
                         if chosen_group != None:
                             movement_grid.clear()
                             movement_grid.set_move_options(cell.indexX, cell.indexY, game_map.tiles, play_grid.units)
+                        chosen_cell = cell.indexX, cell.indexY
                         return #Done for this click
 
     if chosen_group != None and combat_phase == False:
@@ -183,16 +184,25 @@ def gameplay_phase(pos):
             for cell in row:
                 if cell.check_collision(pos):
                     print('clickityclack')
-    #If player chooses for the selected unit to stay in place, switch to combat phase
-    if not combat_phase:
-        if pass_button.check_collision(pos):
-            combat_phase = not combat_phase
     #If player chooses to skip combat, change to next player's turn
     if combat_phase:
         if pass_button.check_collision(pos):
             player1_move_phase = not player1_move_phase
             player2_move_phase = not player2_move_phase
-            combat_phase = not combat_phase
+            combat_phase = False
+            chosen_group = None
+            chosen_cell = None
+            attack_grid.clear()
+            return #exit before triggering next loop
+    #If player chooses for the selected unit to stay in place, switch to combat phase
+    if not combat_phase:
+        if pass_button.check_collision(pos):
+            movement_grid.clear()
+            combat_phase = True
+            attack_grid.set_attack_options(chosen_cell)
+            
+
+    
 
         
 
