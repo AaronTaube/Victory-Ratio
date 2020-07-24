@@ -149,7 +149,7 @@ def gameplay_phase(pos):
         for row in game_map.tiles:
             for cell in row:
                 if cell.check_collision(pos):
-                    if len(play_grid.units[cell.indexX, cell.indexY].units) > 0:
+                    if len(play_grid.units[cell.indexX, cell.indexY].units) > 0 and play_grid.units[cell.indexX, cell.indexY].moved == False:
                         #confirm unit selected is selectable by active player
                         if play_grid.units[cell.indexX, cell.indexY].units[0].player == 1 and player1_move_phase:
                             chosen_group = play_grid.units[cell.indexX, cell.indexY]
@@ -183,16 +183,29 @@ def gameplay_phase(pos):
         for row in game_map.tiles:
             for cell in row:
                 if cell.check_collision(pos):
-                    print('clickityclack')
+                    print('TODO Combat Stuff')
+                    #Insert code to calculate damage and trigger animations
+
+                    #end code here
+                    #swap the turn
+                    '''player1_move_phase = not player1_move_phase
+                    player2_move_phase = not player2_move_phase
+                    combat_phase = False
+                    chosen_group = None
+                    chosen_cell = None
+                    attack_grid.clear()'''
+                    swap_turn()
+                    return #exit before triggering next loop
     #If player chooses to skip combat, change to next player's turn
     if combat_phase:
         if pass_button.check_collision(pos):
-            player1_move_phase = not player1_move_phase
+            '''player1_move_phase = not player1_move_phase
             player2_move_phase = not player2_move_phase
             combat_phase = False
             chosen_group = None
             chosen_cell = None
-            attack_grid.clear()
+            attack_grid.clear()'''
+            swap_turn()
             return #exit before triggering next loop
     #If player chooses for the selected unit to stay in place, switch to combat phase
     if not combat_phase:
@@ -200,10 +213,23 @@ def gameplay_phase(pos):
             movement_grid.clear()
             combat_phase = True
             attack_grid.set_attack_options(chosen_cell)
-            
+#code for ending player turn
+def  swap_turn():
+    global player1_move_phase
+    global player2_move_phase
+    global combat_phase
+    global chosen_group
+    global chosen_cell
+    play_grid.units[chosen_cell].moved = True
+    player1_move_phase = not player1_move_phase
+    player2_move_phase = not player2_move_phase
+    combat_phase = False
+    chosen_group = None
+    chosen_cell = None
+    attack_grid.clear()
 
-    
-
+def next_round():
+    print('TODO')
         
 
 
@@ -223,6 +249,7 @@ while running:
         player2_pool.render_pool(screen)
     if game_on_phase:
         pass_button.show_button()
+        play_grid.render_gray(screen)
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -17,20 +17,6 @@ class Map:
 
     #Creates and stores an array of tiles that make up the playspace
     def __init__(self):
-        """self.tiles = []
-        for i in range(Map.column_count):
-            self.tiles.append([])
-            for j in range(Map.row_count):
-                x = i * 64 + Map.mapX
-                y = j * 64 + Map.mapY
-                #temp: creates just a random tile to come up with a temporary map
-                number = random.random()
-                if number < .2:
-                    self.tiles[i].append(tile.Forest(x, y))
-                elif number > .8:
-                    self.tiles[i].append(tile.Water(x, y))
-                else:
-                    self.tiles[i].append(tile.Plain(x, y)) """
         self.tiles = numpy.empty([0,Map.column_count])
         temp = numpy.empty([0,Map.column_count])
         for j in range(Map.row_count):
@@ -75,11 +61,16 @@ class Grid:
                 temp = numpy.append(temp, unit.Group(x, y))
             self.units = numpy.vstack((self.units, temp)) 
             temp = numpy.empty([0,Map.column_count]) 
-    
+        self.movedImg = pygame.image.load('Images\\Tiles\\moved_mask.png')
     def render_units(self, screen):
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.units[i, j].show_group(screen)
+    def render_gray(self, screen):
+        for j in range(Map.column_count):
+            for i in range(Map.row_count):
+                if self.units[i, j].count > 0 and self.units[i,j].moved == True:
+                    screen.blit(self.movedImg, (64+ 64*i, 64*j))
 class Valid_Moves:
     def __init__(self):
         self.choices = numpy.zeros((Map.row_count, Map.column_count), dtype = bool)
