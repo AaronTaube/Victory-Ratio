@@ -188,6 +188,23 @@ def place_unit(cell):
 def check_for_gameplay(pos):
     if game_on_phase:
         gameplay_phase(pos)
+def check_for_round():
+    #if any unit has not been moved, continue round
+    for row in game_map.tiles:
+            for cell in row:
+                if cell.units["moved"] == False and cell.units["count"] > 0:
+                    return
+    #else, new round
+    new_round()
+#reset round at player 1 goes first
+def new_round():
+    for row in game_map.tiles:
+        for cell in row:
+            if cell.units["moved"] == True:
+                cell.units["moved"] = False
+    player1_move_phase = True
+    player2_move_phase = False
+
 def gameplay_phase(pos):
     #Grab Globals
     global game_on_phase
@@ -272,6 +289,7 @@ def gameplay_phase(pos):
     #If player chooses to skip combat, change to next player's turn
     if combat_phase:
         if pass_button.check_collision(pos):
+            
             '''player1_move_phase = not player1_move_phase
             player2_move_phase = not player2_move_phase
             combat_phase = False
@@ -283,6 +301,8 @@ def gameplay_phase(pos):
     #If player chooses for the selected unit to stay in place, switch to combat phase
     if not combat_phase:
         if pass_button.check_collision(pos):
+            if chosen_cell == None:
+                return #skip if no unit being held
             game_map.clear_moves()
             combat_phase = True
             coordinate = chosen_cell.indexX, chosen_cell.indexY
