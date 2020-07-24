@@ -8,6 +8,21 @@ class Tile:
         self.tile_bonus = 0
         self.tileImg = pygame.image.load('Images\\Tiles\\unfound_tile.png')
         self.is_blocker = False
+        self.units = {
+            "unit_type" : None,
+            "count" : 0,
+            "player" : 0,
+            "moved" : False
+        }
+        self.movement = {
+            'blocker' : False,
+            'range' : False,
+            'player' : 0
+        }
+        self.placement = {
+            'player' : 0,
+            'tile_type' : None
+        }
     def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
         #print("show")
@@ -25,6 +40,7 @@ class Plain(Tile):
     #Plain style of tile
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
+        
         #Plane image
         self.tileImg = pygame.image.load('Images\\Tiles\\grass_tile.png')
 

@@ -220,7 +220,8 @@ def  swap_turn():
     global combat_phase
     global chosen_group
     global chosen_cell
-    play_grid.units[chosen_cell].moved = True
+    #play_grid.units[chosen_cell].moved = True
+    chosen_group.moved = True
     player1_move_phase = not player1_move_phase
     player2_move_phase = not player2_move_phase
     combat_phase = False
