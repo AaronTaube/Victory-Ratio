@@ -18,6 +18,9 @@ class Map:
     #Creates and stores an array of tiles that make up the playspace
     def __init__(self):
         self.tiles = numpy.empty([0,Map.column_count])
+        self.movedImg = pygame.image.load('Images\\Tiles\\moved_mask.png')
+        self.valid_moveImg = pygame.image.load('Images\\Tiles\\movement_selection.png')
+        self.valid_attackImg = pygame.image.load('Images\\Tiles\\attack_selection.png')
         temp = numpy.empty([0,Map.column_count])
         for j in range(Map.row_count):
             for i in range(Map.column_count):
@@ -40,7 +43,245 @@ class Map:
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.tiles[i, j].show_tile(screen)
-
+    '''New Map code
+    Takes all the different grids and makes them run off of the one grid of tiles
+    '''
+    #Code for rendering groups
+    def render_units(self, screen):
+        for j in range(Map.column_count):
+            for i in range(Map.row_count):
+                self.tiles[i, j].show_group(screen)
+    #Puts a gray mask over tile containing a unit that can't be moved
+    def render_gray(self, screen):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.tiles[j,i].units["moved"] == True:
+                    screen.blit(self.movedImg, (64+ 64*i, 64*j))
+    def clear_round(self):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.tiles[i, j].units["moved"] = False
+    #Control UI for valid movement
+    def clear_moves(self):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.tiles[j,i].movement["range"] = False
+    def render_moves(self, screen):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.tiles[j,i].movement["range"] == True:
+                    screen.blit(self.valid_moveImg, (64+ 64*i, 64*j))
+    def player1_valid_placement(self, unit_type):
+        for j in range(Map.row_count):
+            for i in range(2):
+                #Set true for placeable tiles that aren't water tiles
+                if self.tiles[j,i].tile_info["blocker"] == False:
+                    self.tiles[j,i].movement["range"] = True
+                if self.tiles[j,i].units["count"] >= 9:
+                    self.tiles[j,i].tile_info["range"] = False
+                if self.tiles[j,i].units["count"] > 0:
+                    if self.tiles[j,i].units["unit_type"] != unit_type:
+                        self.tiles[j,i].tile_info["range"] = False
+    def player2_valid_placement(self, unit_type):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count - 2, Map.column_count):
+                #Set true for placeable tiles that aren't water tiles
+                if self.tiles[j,i].tile_info["blocker"] == False:
+                    self.tiles[j,i].movement["range"] = True
+                if self.tiles[j,i].units["count"] >= 9:
+                    self.tiles[j,i].tile_info["range"] = False
+                if self.tiles[j,i].units["count"] > 0:
+                    if self.tiles[j,i].units["unit_type"] != unit_type:
+                        self.tiles[j,i].tile_info["range"] = False
+    def set_move_options(self, row, column):
+        #set straight movements
+        for i in range(3):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1:
+                if self.tiles[current_row, column].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column].movement["range"] = True
+        for i in range(3):
+            current_row = row - 1 - i
+            if current_row >= 0:
+                if self.tiles[current_row, column].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column].movement["range"] = True
+        for i in range(3):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1:
+                if self.tiles[row, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row, current_column].movement["range"] = True
+        for i in range(3):
+            current_column = column - 1 - i
+            if current_column >= 0:
+                if self.tiles[row, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row, current_column].movement["range"] = True
+        #Set Other moves, be sure to cover all possible options, some redundancy necessary
+        #   up to 2 row moves
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column + 1 <= Map.column_count - 1:
+                if self.tiles[current_row, column + 1].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column + 1].movement["range"] = True
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column - 1 >= 0:
+                if self.tiles[current_row, column - 1].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column - 1].movement["range"] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column + 1 <= Map.column_count - 1:
+                if self.tiles[current_row, column + 1].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column + 1].movement["range"] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column - 1 >= 0:
+                if self.tiles[current_row, column - 1].tile_info["blocker"]:
+                    break
+                self.tiles[current_row, column - 1].movement["range"] = True
+        #   up to 2 Column moves
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row + 1 <= Map.row_count - 1:
+                if self.tiles[row + 1, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row + 1, current_column].movement["range"] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row + 1 <= Map.row_count :
+                if self.tiles[row + 1, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row + 1, current_column].movement["range"] = True
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row - 1 >= 0:
+                if self.tiles[row - 1, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row - 1, current_column].movement["range"] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row - 1 >= 0:
+                if self.tiles[row - 1, current_column].tile_info["blocker"]:
+                    break
+                self.tiles[row - 1, current_column].movement["range"] = True
+        #clean out spaces where units already exist
+        #   Technically not the most efficient way, but should only be called once per click,
+        #    and easier to read and manage
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.tiles[j, i].units["count"] > 0:
+                    self.tiles[j, i].movement["range"] = False
+    '''def set_move_options(self, row, column, tiles, groups):
+        #set straight movements
+        for i in range(3):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1:
+                if tiles[current_row, column].is_blocker:
+                    break
+                self.choices[current_row, column] = True
+        for i in range(3):
+            current_row = row - 1 - i
+            if current_row >= 0:
+                if tiles[current_row, column].is_blocker:
+                    break
+                self.choices[current_row, column] = True
+        for i in range(3):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1:
+                if tiles[row, current_column].is_blocker:
+                    break
+                self.choices[row, current_column] = True
+        for i in range(3):
+            current_column = column - 1 - i
+            if current_column >= 0:
+                if tiles[row, current_column].is_blocker:
+                    break
+                self.choices[row, current_column] = True
+        #Set Other moves, be sure to cover all possible options, some redundancy necessary
+        #   up to 2 row moves
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column + 1 <= Map.column_count - 1:
+                if tiles[current_row, column + 1].is_blocker:
+                    break
+                self.choices[current_row, column + 1] = True
+        for i in range(2):
+            current_row = row + 1 + i
+            if current_row <= Map.row_count - 1 and column - 1 >= 0:
+                if tiles[current_row, column - 1].is_blocker:
+                    break
+                self.choices[current_row, column - 1] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column + 1 <= Map.column_count - 1:
+                if tiles[current_row, column + 1].is_blocker:
+                    break
+                self.choices[current_row, column + 1] = True
+        for i in range(2):
+            current_row = row - 1 - i
+            if current_row >= 0 and column - 1 >= 0:
+                if tiles[current_row, column - 1].is_blocker:
+                    break
+                self.choices[current_row, column - 1] = True
+        #   up to 2 Column moves
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row + 1 <= Map.row_count - 1:
+                if tiles[row + 1, current_column].is_blocker:
+                    break
+                self.choices[row + 1, current_column] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row + 1 <= Map.row_count :
+                if tiles[row + 1, current_column].is_blocker:
+                    break
+                self.choices[row + 1, current_column] = True
+        for i in range(2):
+            current_column = column + 1 + i
+            if current_column <= Map.column_count - 1 and row - 1 >= 0:
+                if tiles[row - 1, current_column].is_blocker:
+                    break
+                self.choices[row - 1, current_column] = True
+        for i in range(2):
+            current_column = column - 1 - i
+            if current_column >= 0 and row - 1 >= 0:
+                if tiles[row - 1, current_column].is_blocker:
+                    break
+                self.choices[row - 1, current_column] = True
+        #clean out spaces where units already exist
+        #   Technically not the most efficient way, but should only be called once per click,
+        #    and easier to read and manage
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if len(groups[j, i].units) > 0:
+                    self.choices[j, i] = False'''
+    #Control UI for valid attacks
+    def render_attacks(self, screen):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                if self.tiles[j,i].movement["reach"] == True:
+                    screen.blit(self.valid_attackImg, (64+ 64*i, 64*j))
+    def clear_attacks(self):
+        for j in range(Map.row_count):
+            for i in range(Map.column_count):
+                self.tiles[j,i].movement["reach"] = False
+    def set_attack_options(self, origin):
+        originX, originY = origin
+        if originX + 1 <= Map.row_count - 1:
+            self.tiles[originX + 1, originY].movement["reach"] = True
+        if originX - 1 >= 0:
+            self.tiles[originX - 1, originY].movement["reach"] = True
+        if originY + 1 <= Map.column_count - 1:
+            self.tiles[originX, originY + 1].movement["reach"] = True
+        if originY - 1 >= 0:
+            self.tiles[originX, originY - 1].movement["reach"] = True
+'''
 class Grid:
     #Creates a second grid of the same size as the map
     # to store units. 
@@ -217,7 +458,7 @@ class Valid_Attacks:
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 self.choices[j,i] = False
-
+'''
 class Pool:
     #Creates the Unit Pool for each player
     #Currently creates a set pool for each player
