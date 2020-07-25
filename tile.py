@@ -1,4 +1,5 @@
 import pygame
+import random
 class Tile:
     tile_width = 64
     tile_height = 64
@@ -28,6 +29,11 @@ class Tile:
             "strength" : 0,
             "blocker" : False
         }
+        self.strengths = {
+            "spear" : "sword",
+            "sword" : "axe",
+            "axe" : "spear"
+        }
     def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
         #print("show")
@@ -51,8 +57,8 @@ class Tile:
     def subtract_unit(self):
         self.units["count"] = self.units["count"] - 1
         if self.units["count"] == 0:
-            clear_unit()
-    def clear_unit(self):
+            self.clear_units()
+    def clear_units(self):
         self.units["count"] = 0
         self.units["unit_type"] = None
         self.units["player"] = 0
@@ -70,7 +76,7 @@ class Tile:
             if self.units["unit_type"] == "axe":
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedAxeIdle.png')
             if self.units["unit_type"] == "sword":
-                self.unitImg = pygame.image.load('Images\\Soldiers\\ReddIdle.png')
+                self.unitImg = pygame.image.load('Images\\Soldiers\\RedSwordIdle.png')
             if self.units["unit_type"] == "spear":
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
     def show_group(self, screen):
@@ -111,43 +117,33 @@ class Tile:
                 unitX = 12 + self.tileX
                 unitY = -24 + self.tileY
             screen.blit(self.unitImg, (unitX, unitY))
-        '''
-        #if no units present, skip
-        if self.count <= 0:
+    def attack(self, defender):
+        #if a unit was cleared in combat, it's type can land as None. If either is gone, skip
+        if self.units["unit_type"] == None or defender.units["unit_type"] == None:
             return
-        #Set all possible positions within tile for unit
-        for x in range(0, self.count):
-            if x == 0:
-                self.units[x].unitX = 12
-                self.units[x].unitY = 32
-            if x == 1:
-                self.units[x].unitX = 0
-                self.units[x].unitY = 24
-            if x == 2:
-                self.units[x].unitX = 24
-                self.units[x].unitY = 24
-            if x == 3:
-                self.units[x].unitX = 12
-                self.units[x].unitY = 16
-            if x == 4:
-                self.units[x].unitX = 0
-                self.units[x].unitY = 8
-            if x == 5:
-                self.units[x].unitX = 24
-                self.units[x].unitY = 8
-            if x == 6:
-                self.units[x].unitX = 12
-                self.units[x].unitY = 0
-            if x == 7:
-                self.units[x].unitX = 0
-                self.units[x].unitY = -8
-            if x == 8:
-                self.units[x].unitX = 24
-                self.units[x].unitY = -8
-            if x == 9:
-                self.units[x].unitX = 12
-                self.units[x].unitY = -24
-'''
+        attacker_strength = 100
+        defender_strength = 100
+        #Check if a unit has advantage, and give it a 50% strength increase
+        if self.strengths[self.units["unit_type"]] == defender.units["unit_type"]:
+            attacker_strength += 50
+        if defender.strengths[defender.units["unit_type"]] == self.units["unit_type"]:
+            defender_strength += 50
+        #Add defensive terrain bonus to defender strength
+        defender_strength += defender.tile_info["strength"]
+        print("defender", defender_strength, "attacker", attacker_strength)
+        #give each attacker one chance at killing an enemy unit
+        for i in range (self.units["count"]):
+            #but only if units remain
+            if defender.units["count"] > 0:
+                #generate random number between zero and the total of attacker and defender strength
+                attack = random.randint(0, attacker_strength + defender_strength)
+                #a high attacker strength has a higher chance of success
+                #if the number generated is under the attack strength, kill a unit
+                if attack < attacker_strength:
+                    defender.subtract_unit()
+
+
+        
 
 class Plain(Tile):
     #Plain style of tile
@@ -171,7 +167,7 @@ class Forest(Tile):
     #Forest style of tile
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
-        self.tile_info["tile_type"] = "water"
+        self.tile_info["tile_type"] = "forest"
         self.tile_info["strength"] = 25
         #Forest image
         self.tileImg = pygame.image.load('Images\\Tiles\\forest_tile.png')

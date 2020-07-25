@@ -1,7 +1,6 @@
 import pygame
 import board
 import math
-import Units.unit as unit
 import gameplay_buttons as gb
 #Initialize the pygame
 pygame.init()
@@ -95,14 +94,7 @@ def handle_selection_phase(pos):
                         player1_pool.clear_selection()
                         player2_pool.clear_selection()
                         chosen_unit = None
-                '''if movement_grid.choices[cell.indexX, cell.indexY]:
-                    place_unit(cell.indexX, cell.indexY)
-                    units_to_place = units_to_place - 1
-                    chosen_unit.reduce_count()
-                    if chosen_unit.count <= 0:
-                        player1_pool.clear_selection()
-                        player2_pool.clear_selection()
-                        chosen_unit = None'''
+                
                     #play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
     #Handle swapping of player phase
     if units_to_place <= 0:
@@ -119,60 +111,7 @@ def handle_selection_phase(pos):
             unit_selection_phase = False
             game_on_phase = True
             player1_move_phase = True
-    '''#confirm which unit is being selected
-    if player1_selection_phase:
-        for cell in player1_pool.options:
-            if cell.check_collision(pos):
-                player1_pool.clear_selection()
-                
-                if cell.count > 0:
-                    cell.set_selected()
-        #highlight tiles that units can be placed in
-        if player1_pool.unit_selected():
-            chosen_unit = player1_pool.get_selected()
-            movement_grid.clear()
-            movement_grid.player1_valid_placement(game_map.tiles, play_grid.units, chosen_unit.unit_type)
-    elif player2_selection_phase:
-        #confirm which unit is being selected
-        for cell in player2_pool.options:
-            if cell.check_collision(pos):
-                player2_pool.clear_selection()
-                cell.set_selected()
-        #highlight tiles that units can be placed in
-        if player2_pool.unit_selected():
-            chosen_unit = player2_pool.get_selected()
-            movement_grid.player2_valid_placement(game_map.tiles, play_grid.units, chosen_unit.unit_type)
-    #if no unit selected, exit to minimize work
-    if chosen_unit == None:
-        return
-    #place units
-    for row in game_map.tiles:
-        for cell in row:
-            if cell.check_collision(pos):
-                if movement_grid.choices[cell.indexX, cell.indexY]:
-                    place_unit(cell.indexX, cell.indexY)
-                    units_to_place = units_to_place - 1
-                    chosen_unit.reduce_count()
-                    if chosen_unit.count <= 0:
-                        player1_pool.clear_selection()
-                        player2_pool.clear_selection()
-                        chosen_unit = None
-                    #play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
-    #Handle swapping of player phase
-    if units_to_place <= 0:
-        player1_selection_phase = not player1_selection_phase
-        player2_selection_phase = not player2_selection_phase
-        units_to_place = 9
-        chosen_unit = None
-        player1_pool.clear_selection()
-        player2_pool.clear_selection()
-        movement_grid.clear()
-        if player1_pool.get_count() <= 0 and player2_pool.get_count() <= 0:
-            player1_selection_phase = False
-            player2_selection_phase = False
-            unit_selection_phase = False
-            game_on_phase = True
-            player1_move_phase = True'''
+    
 
 def place_unit(cell):
     unit_type = chosen_unit.unit_type
@@ -180,14 +119,12 @@ def place_unit(cell):
         cell.add_unit(unit_type)
     if player2_selection_phase:
         cell.add_unit(unit_type, 2)
-    '''if player1_selection_phase:
-        game_map.tiles[x, y].add_unit(unit_type)
-    if player2_selection_phase:
-        game_map.tiles[x, y].add_unit(unit_type, 2)'''
+    
 #Gameplay Handlers
 def check_for_gameplay(pos):
     if game_on_phase:
         gameplay_phase(pos)
+        check_for_round()
 def check_for_round():
     #if any unit has not been moved, continue round
     for row in game_map.tiles:
@@ -220,18 +157,7 @@ def gameplay_phase(pos):
         for row in game_map.tiles:
             for cell in row:
                 if cell.check_collision(pos):
-                    '''if len(play_grid.units[cell.indexX, cell.indexY].units) > 0 and play_grid.units[cell.indexX, cell.indexY].moved == False:
-                        #confirm unit selected is selectable by active player
-                        if play_grid.units[cell.indexX, cell.indexY].units[0].player == 1 and player1_move_phase:
-                            chosen_group = play_grid.units[cell.indexX, cell.indexY]
-                        elif play_grid.units[cell.indexX, cell.indexY].units[0].player == 2 and player2_move_phase:
-                            chosen_group = play_grid.units[cell.indexX, cell.indexY]
-                        #if choice valid, set movement options
-                        if chosen_group != None:
-                            movement_grid.clear()
-                            movement_grid.set_move_options(cell.indexX, cell.indexY, game_map.tiles, play_grid.units)
-                        chosen_cell = cell.indexX, cell.indexY
-                        return #Done for this click'''
+                    
                     #determine if moveable unit in cell
                     if cell.units["count"] > 0 and cell.units["moved"] == False:
                         #confirm unit is selectable by active player
@@ -242,7 +168,7 @@ def gameplay_phase(pos):
                         #if choice valid, set movement options
                         if chosen_cell != None:
                             game_map.clear_moves()
-                            game_map.set_move_options(cell.indexX, cell.indexY)
+                            game_map.set_move_options(chosen_cell.indexX, chosen_cell.indexY)
                         return #Done for this click
     if chosen_cell != None and combat_phase == False:
         for row in game_map.tiles:
@@ -257,45 +183,26 @@ def gameplay_phase(pos):
                         game_map.set_attack_options(coordinate)
                         print("check")
                         return
-                        '''chosen_cell = cell.indexX, cell.indexY
-                        unit_type = chosen_group.unit_type
-                        play_grid.units[chosen_cell].units = chosen_group.units
-                        play_grid.units[chosen_cell].count = chosen_group.count
-                        chosen_group.units = []
-                        chosen_group.count = 0
-                        chosen_group = play_grid.units[chosen_cell]
-                        #prepare for combat phase
-                        movement_grid.clear()
-                        combat_phase = True
-                        attack_grid.set_attack_options(chosen_cell)
-                        return'''
+                      
     if combat_phase:
         for row in game_map.tiles:
             for cell in row:
                 if cell.check_collision(pos):
-                    print('TODO Combat Stuff')
-                    #Insert code to calculate damage and trigger animations
-
-                    #end code here
+                    if cell.units["player"] != chosen_cell.units["player"] and cell.units["count"] > 0 and cell.movement["reach"]:
+                        #attacking player deals damage first
+                        #//TODO animate
+                        chosen_cell.attack(cell)
+                        #defending player deals damage after losing units
+                        #//TODO animate
+                        cell.attack(chosen_cell)
+                    else:
+                        return #not valid target, so no reaction
                     #swap the turn
-                    '''player1_move_phase = not player1_move_phase
-                    player2_move_phase = not player2_move_phase
-                    combat_phase = False
-                    chosen_group = None
-                    chosen_cell = None
-                    attack_grid.clear()'''
                     swap_turn()
                     return #exit before triggering next loop
     #If player chooses to skip combat, change to next player's turn
     if combat_phase:
         if pass_button.check_collision(pos):
-            
-            '''player1_move_phase = not player1_move_phase
-            player2_move_phase = not player2_move_phase
-            combat_phase = False
-            chosen_group = None
-            chosen_cell = None
-            attack_grid.clear()'''
             swap_turn()
             return #exit before triggering next loop
     #If player chooses for the selected unit to stay in place, switch to combat phase
@@ -311,7 +218,7 @@ def gameplay_phase(pos):
 def move_unit(start, end):
     end.units = start.units.copy()
     end.set_unitImg()
-    start.clear_unit()
+    start.clear_units()
 #code for ending player turn
 def swap_turn():
     global player1_move_phase
@@ -321,6 +228,18 @@ def swap_turn():
     global chosen_cell
     #play_grid.units[chosen_cell].moved = True
     chosen_cell.units["moved"] = True
+    if player1_move_phase:
+        if not check_has_moves(2) and check_has_moves(1):
+            chosen_cell = None
+            combat_phase = False
+            game_map.clear_attacks()
+            return #if other player has no valid moves, stay on this players turn
+    if player2_move_phase:
+        if not check_has_moves(1) and check_has_moves(2):
+            chosen_cell = None
+            combat_phase = False
+            game_map.clear_attacks()
+            return #if other player has no valid moves, stay on this players turn
     player1_move_phase = not player1_move_phase
     player2_move_phase = not player2_move_phase
     combat_phase = False
@@ -328,8 +247,34 @@ def swap_turn():
     chosen_cell = None
     game_map.clear_attacks()
 
-def next_round():
-    print('TODO')
+def check_has_moves(player):
+    for row in game_map.tiles:
+        for cell in row:
+            if cell.units["player"] == player and cell.units["moved"] == False :
+                return True
+    return False
+def check_game_over():
+    global game_end_phase
+    global game_on_phase
+    player1_alive = False
+    player2_alive = False
+    for row in game_map.tiles:
+        for cell in row:
+            if cell.units["player"] == 1 and cell.units["count"] > 0:
+                player1_alive = True
+            if cell.units["player"] == 2 and cell.units["count"] > 0:
+                player2_alive = True
+            if player1_alive and player2_alive:
+                return
+    if player1_alive and not player2_alive:
+        #TODO player1 victory
+        game_end_phase = True
+        game_on_phase = False
+    if player2_alive and not player1_alive:
+        #TODO player2 victory
+        game_end_phase = True
+        game_on_phase = False
+
         
 
 
@@ -344,9 +289,6 @@ while running:
     game_map.render_moves(screen)   
     game_map.render_units(screen)
 
-    '''movement_grid.render_moves(screen)
-    attack_grid.render_attacks(screen)
-    play_grid.render_units(screen)'''
     if unit_selection_phase:
         player1_pool.render_pool(screen)
         player2_pool.render_pool(screen)
@@ -355,6 +297,9 @@ while running:
         game_map.render_gray(screen)
         if combat_phase:
             game_map.render_attacks(screen)
+        check_game_over()
+    if game_end_phase:
+        print("Todo")
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
