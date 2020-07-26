@@ -1,5 +1,18 @@
 import pygame
 import random
+'''
+Name:       tile.py
+Purpose:    Class and subclasses for displaying the map and accounting for gameplay mechanics such as terrain advantages,
+            combat, animation
+Author:     Aaron Taube
+Created:    5/2020
+TODO:       Fix the pathfinding for finding valid unit placement
+            Reduce rate of water tiles for now
+            Add smarter programming to make sure there is plenty of paths and spaces for units to cross map
+            Animation for moving units
+            Playing sound for animations
+Notes:
+'''
 class Tile:
     tile_width = 64
     tile_height = 64
@@ -18,7 +31,7 @@ class Tile:
         }
         self.movement = {
             "range" : False,
-            "player" : 0,
+            #"player" : 0,
             "reach" : False
         }
         
@@ -87,6 +100,7 @@ class Tile:
         
         unitX = 0
         unitY = 0
+        #place units based off the number of units in the slot
         for x in range(0, self.units["count"]):
             if x == 0:
                 unitX = 12 + self.tileX + self.animateX
@@ -175,8 +189,8 @@ class Forest(Tile):
         #Forest image
         self.tileImg = pygame.image.load('Images\\Tiles\\forest_tile.png')
 #may cancel this
-class Selection(Tile):
+'''class Selection(Tile):
     #Grid tile for unit pool
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
-        self.tileImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')
+        self.tileImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')'''

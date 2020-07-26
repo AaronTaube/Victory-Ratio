@@ -2,6 +2,18 @@ import pygame
 import board
 import math
 import gameplay_UI as gUI
+
+'''
+Name:       main.py
+Purpose:    Handles core gameplay loop and screen updates. 
+Author:     Aaron Taube
+Created:    5/2020
+TODO:       Flask integration       
+            Include tutorial screen on launch
+            Any needed changes for adding sound
+            Any needed changes for compatibility with changes elsewhere
+Notes:
+'''
 #Initialize the pygame
 pygame.init()
 
