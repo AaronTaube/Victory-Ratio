@@ -210,8 +210,8 @@ class Pool:
         else:
             self.x = (Map.column_count + 1) * 64
         self.axe_count = 9
-        self.spear_count = 9
-        self.sword_count = 9
+        self.spear_count = 0
+        self.sword_count = 0
         self.populate_pool()
         
     def populate_pool(self):

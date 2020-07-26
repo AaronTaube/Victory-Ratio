@@ -1,7 +1,7 @@
 import pygame
 import board
 import math
-import gameplay_buttons as gb
+import gameplay_UI as gUI
 #Initialize the pygame
 pygame.init()
 
@@ -14,7 +14,8 @@ game_map = board.Map()
 #attack_grid = board.Valid_Attacks()
 player1_pool = board.Pool(1)
 player2_pool = board.Pool(2)
-pass_button = gb.Pass_Button(screen)
+pass_button = gUI.Pass_Button(screen)
+instructions = gUI.Instruction(screen)
 #handle selections
 selected_unit = None
 selected_move = None
@@ -22,8 +23,10 @@ selected_attack = None
 
 #Handle game states
 #Begin and End Phase
+initiation_phase = True
 game_on_phase = False
-game_end_phase = False
+game_end_setup = False
+winner_text = ""
 #Selection phase
 unit_selection_phase = True
 player1_selection_phase = True
@@ -35,7 +38,6 @@ chosen_unit = None
 player1_move_phase = False
 player2_move_phase = False
 combat_phase = False
-#chosen_group = None
 chosen_destination = None
 chosen_attack = None
 chosen_cell = None
@@ -94,6 +96,10 @@ def handle_selection_phase(pos):
                         player1_pool.clear_selection()
                         player2_pool.clear_selection()
                         chosen_unit = None
+                    if player2_selection_phase:
+                        instructions.set_instructions("Player 2 place " + str(units_to_place) + " units")
+                    if player1_selection_phase:
+                        instructions.set_instructions("Player 1 place " + str(units_to_place) + " units")
                 
                     #play_grid.units[cell.indexX, cell.indexY].add_unit(unit.Sword())
     #Handle swapping of player phase
@@ -105,12 +111,19 @@ def handle_selection_phase(pos):
         player1_pool.clear_selection()
         player2_pool.clear_selection()
         game_map.clear_moves()
+        #update instruction text
+        if player2_selection_phase:
+            instructions.set_instructions("Player 2 place " + str(units_to_place) + " units")
+        if player1_selection_phase:
+            instructions.set_instructions("Player 1 place " + str(units_to_place) + " units")
         if player1_pool.get_count() <= 0 and player2_pool.get_count() <= 0:
             player1_selection_phase = False
             player2_selection_phase = False
             unit_selection_phase = False
             game_on_phase = True
             player1_move_phase = True
+            instructions.set_instructions("Player 1's turn!")
+        
     
 
 def place_unit(cell):
@@ -141,6 +154,7 @@ def new_round():
                 cell.units["moved"] = False
     player1_move_phase = True
     player2_move_phase = False
+    update_turn_text()
 
 def gameplay_phase(pos):
     #Grab Globals
@@ -246,6 +260,13 @@ def swap_turn():
     #chosen_group = None
     chosen_cell = None
     game_map.clear_attacks()
+    update_turn_text()
+    
+def update_turn_text():
+    if player1_move_phase:
+        instructions.set_instructions("Player 1's turn!")
+    if player2_move_phase:
+        instructions.set_instructions("Player 2's turn!")
 
 def check_has_moves(player):
     for row in game_map.tiles:
@@ -254,8 +275,9 @@ def check_has_moves(player):
                 return True
     return False
 def check_game_over():
-    global game_end_phase
+    global game_end_setup
     global game_on_phase
+    global winner_text
     player1_alive = False
     player2_alive = False
     for row in game_map.tiles:
@@ -270,11 +292,14 @@ def check_game_over():
         #TODO player1 victory
         game_end_phase = True
         game_on_phase = False
+        winner_text = "Player 1 Wins!"
+        game_end_setup = True
     if player2_alive and not player1_alive:
         #TODO player2 victory
         game_end_phase = True
         game_on_phase = False
-
+        winner_text = "Player 2 Wins!"
+        game_end_setup = True
         
 
 
@@ -284,11 +309,17 @@ running = True
 while running:
     #black backdrop
     screen.fill((0,0,0))
+    #Set text for player phase
+    if initiation_phase:
+        instructions.set_instructions("Player 1 place " + str(units_to_place) + " units")
+        initiation_phase = False
+    if game_end_setup:
+        instructions.set_instructions(winner_text)
     #Render all interface by layer
     game_map.render_map(screen)
     game_map.render_moves(screen)   
     game_map.render_units(screen)
-
+    instructions.show_instructions()
     if unit_selection_phase:
         player1_pool.render_pool(screen)
         player2_pool.render_pool(screen)
@@ -298,8 +329,6 @@ while running:
         if combat_phase:
             game_map.render_attacks(screen)
         check_game_over()
-    if game_end_phase:
-        print("Todo")
     #allows the game to be exited by clicking the 'x' in the window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
