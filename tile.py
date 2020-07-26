@@ -21,9 +21,7 @@ class Tile:
             "player" : 0,
             "reach" : False
         }
-        self.placement = {
-            "player" : 0
-        }
+        
         self.tile_info = {
             "tile_type" : None,
             "strength" : 0,
@@ -34,6 +32,9 @@ class Tile:
             "sword" : "axe",
             "axe" : "spear"
         }
+        #values needed for running simple animation
+        self.animateX = 0
+        self.animateY = 0
     def show_tile(self, screen):
         screen.blit(self.tileImg, (self.tileX, self.tileY))
         #print("show")
@@ -83,39 +84,40 @@ class Tile:
         #if no units present, skip
         if self.units["count"] <= 0:
             return
+        
         unitX = 0
         unitY = 0
         for x in range(0, self.units["count"]):
             if x == 0:
-                unitX = 12 + self.tileX
-                unitY = 32 + self.tileY
+                unitX = 12 + self.tileX + self.animateX
+                unitY = 32 + self.tileY + self.animateY
             if x == 1:
-                unitX = 0 + self.tileX
-                unitY = 24 + self.tileY
+                unitX = 0 + self.tileX + self.animateX
+                unitY = 24 + self.tileY + self.animateY
             if x == 2:
-                unitX = 24 + self.tileX
-                unitY = 24 + self.tileY
+                unitX = 24 + self.tileX + self.animateX
+                unitY = 24 + self.tileY + self.animateY
             if x == 3:
-                unitX = 12 + self.tileX
-                unitY = 16 + self.tileY
+                unitX = 12 + self.tileX  + self.animateX
+                unitY = 16 + self.tileY + self.animateY
             if x == 4:
-                unitX = 0 + self.tileX
-                unitY = 8  + self.tileY
+                unitX = 0 + self.tileX + self.animateX
+                unitY = 8  + self.tileY + self.animateY
             if x == 5:
-                unitX = 24 + self.tileX
-                unitY = 8 + self.tileY
+                unitX = 24 + self.tileX + self.animateX
+                unitY = 8 + self.tileY + self.animateY
             if x == 6:
-                unitX = 12 + self.tileX
-                unitY = 0 + self.tileY
+                unitX = 12 + self.tileX + self.animateX
+                unitY = 0 + self.tileY + self.animateY
             if x == 7:
-                unitX = 0 + self.tileX
-                unitY = -8 + self.tileY
+                unitX = 0 + self.tileX + self.animateX
+                unitY = -8 + self.tileY + self.animateY
             if x == 8:
-                unitX = 24 + self.tileX
-                unitY = -8 + self.tileY
+                unitX = 24 + self.tileX + self.animateX
+                unitY = -8 + self.tileY + self.animateY
             if x == 9:
-                unitX = 12 + self.tileX
-                unitY = -24 + self.tileY
+                unitX = 12 + self.tileX + self.animateX
+                unitY = -24 + self.tileY + self.animateY
             screen.blit(self.unitImg, (unitX, unitY))
     def attack(self, defender):
         #if a unit was cleared in combat, it's type can land as None. If either is gone, skip
@@ -130,7 +132,6 @@ class Tile:
             defender_strength += 50
         #Add defensive terrain bonus to defender strength
         defender_strength += defender.tile_info["strength"]
-        print("defender", defender_strength, "attacker", attacker_strength)
         #give each attacker one chance at killing an enemy unit
         for i in range (self.units["count"]):
             #but only if units remain
@@ -141,7 +142,9 @@ class Tile:
                 #if the number generated is under the attack strength, kill a unit
                 if attack < attacker_strength:
                     defender.subtract_unit()
-
+    def slide_units(self, x, y):
+        self.animateX = self.animateX + x
+        self.animateY = self.animateY + y
 
         
 

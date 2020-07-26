@@ -7,6 +7,9 @@ pygame.init()
 
 #handle Screen
 screen = pygame.display.set_mode((960, 640))
+#Used just to lock framerate
+clock = pygame.time.Clock()
+keyframe_delay = 21
 #Currently can store a 13x10 grid, allowing for a small amount of space on sides
 game_map = board.Map()
 #play_grid = board.Grid()
@@ -204,10 +207,24 @@ def gameplay_phase(pos):
                 if cell.check_collision(pos):
                     if cell.units["player"] != chosen_cell.units["player"] and cell.units["count"] > 0 and cell.movement["reach"]:
                         #attacking player deals damage first
-                        #//TODO animate
+                        if chosen_cell.indexY < cell.indexY:
+                            animate_combat(chosen_cell, "up")
+                        if chosen_cell.indexY > cell.indexY:
+                            animate_combat(chosen_cell, "down")
+                        if chosen_cell.indexX < cell.indexX:
+                            animate_combat(chosen_cell, "right")
+                        if chosen_cell.indexX > cell.indexX:
+                            animate_combat(chosen_cell, "left")
                         chosen_cell.attack(cell)
                         #defending player deals damage after losing units
-                        #//TODO animate
+                        if cell.indexY < chosen_cell.indexY:
+                            animate_combat(cell, "up")
+                        if cell.indexY > chosen_cell.indexY:
+                            animate_combat(cell, "down")
+                        if cell.indexX < chosen_cell.indexX:
+                            animate_combat(cell, "right")
+                        if cell.indexX > chosen_cell.indexX:
+                            animate_combat(cell, "left")
                         cell.attack(chosen_cell)
                     else:
                         return #not valid target, so no reaction
@@ -229,6 +246,108 @@ def gameplay_phase(pos):
             coordinate = chosen_cell.indexX, chosen_cell.indexY
             game_map.set_attack_options(coordinate)
 
+def animate_combat(cell, direction):
+    if direction == "left":
+        #slide unit towards target
+        for i in range(12):
+            cell.slide_units(0, -2)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+        #slide unit back to start position
+        for i in range(12):
+            cell.slide_units(0, 2)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+    if direction == "right":
+        #slide unit towards target
+        for i in range(12):
+            cell.slide_units(0, 2)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+        #slide unit back to start position
+        for i in range(12):
+            cell.slide_units(0, -2)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+    if direction == "up":
+        #slide unit towards target
+        for i in range(12):
+            cell.slide_units(2,0)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+        #slide unit back to start position
+        for i in range(12):
+            cell.slide_units(-2, 0)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+    if direction == "down":
+        #slide unit towards target
+        for i in range(12):
+            cell.slide_units(-2, 0)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+        #slide unit back to start position
+        for i in range(12):
+            cell.slide_units(2, 0)
+            #continue to animate all other aspects as normal
+            screen.fill((0,0,0))
+            game_map.render_map(screen) 
+            game_map.render_units(screen)
+            game_map.render_gray(screen)
+            pass_button.show_button()
+            instructions.show_instructions()
+            pygame.time.delay(keyframe_delay)
+            pygame.display.update()
+    
 def move_unit(start, end):
     end.units = start.units.copy()
     end.set_unitImg()
@@ -338,4 +457,5 @@ while running:
             check_for_selection(pos)
             check_for_gameplay(pos)
     pygame.display.update()
+    clock.tick(60)
 
