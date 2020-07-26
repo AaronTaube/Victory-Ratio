@@ -2,14 +2,11 @@ import pygame
 import random
 '''
 Name:       tile.py
-Purpose:    Class and subclasses for displaying the map and accounting for gameplay mechanics such as terrain advantages,
-            combat, animation
+Purpose:    Class and subclasses for displaying the map tiles and accounting for gameplay mechanics such as terrain advantages,
+            combat, animation at the more granular level
 Author:     Aaron Taube
-Created:    5/2020
-TODO:       Fix the pathfinding for finding valid unit placement
-            Reduce rate of water tiles for now
-            Add smarter programming to make sure there is plenty of paths and spaces for units to cross map
-            Animation for moving units
+Created:    6/14/2020
+TODO:       Animation for moving units
             Playing sound for animations
 Notes:
 '''

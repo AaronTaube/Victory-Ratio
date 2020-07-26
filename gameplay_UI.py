@@ -1,5 +1,15 @@
 import pygame
-
+'''
+Name:       gameplay_UI.py
+Purpose:    Classes for GUI elements outside of the game board itself. Pass button, text instructions etc;
+Author:     Aaron Taube
+Created:    7/21/2020
+TODO:       Add visual feedback for pass button clicked
+            Add tutorial window
+            Add menu button
+Notes:
+'''
+#Allows player to skip certain actions
 class Pass_Button:
     def __init__(self, screen):
         self.buttonImg = pygame.image.load('Images\\Buttons\\Pass.png')
@@ -13,6 +23,7 @@ class Pass_Button:
                 print('click')
                 return True
         return False
+#Instructive text at the bottom of the screen, such as telling whose turn it is
 class Instruction:
     def __init__(self, screen):
         self.screen = screen

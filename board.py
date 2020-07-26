@@ -2,14 +2,23 @@ import tile
 import random
 import numpy
 import pygame
-
+'''
+Name:       board.py
+Purpose:    Class and subclasses for displaying the map and accounting for gameplay mechanics such as terrain generation, 
+            and combat, animation
+Author:     Aaron Taube
+Created:    6/14/2020
+TODO:       Fix the pathfinding for finding valid unit placement
+            Reduce rate of water tiles for now
+            Add smarter programming to make sure there is plenty of paths and spaces for units to cross map
+Notes:
+'''
 
 class Map:
     #Positioning Data
     #create grid
     column_count = 13
     row_count = 9
-    #tiles = []
     #position grid
     mapX = 64
     mapY = 0
