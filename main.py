@@ -8,9 +8,7 @@ Name:       main.py
 Purpose:    Handles core gameplay loop and screen updates. 
 Author:     Aaron Taube
 Created:    6/13/2020
-TODO:       Flask integration       
-            Include tutorial screen on launch
-            Any needed changes for adding sound
+TODO:       Any needed changes for adding sound
             Any needed changes for compatibility with changes elsewhere
 Notes:
 '''
@@ -19,18 +17,20 @@ pygame.init()
 
 #handle Screen
 screen = pygame.display.set_mode((960, 640))
+#Title and Icon
+pygame.display.set_caption("Victory Ratio")
+icon = pygame.image.load('Images\\Soldiers\\BlueAxeIdle.png')
+pygame.display.set_icon(icon)
 #Used just to lock framerate
 clock = pygame.time.Clock()
 keyframe_delay = 21
 #Currently can store a 13x10 grid, allowing for a small amount of space on sides
 game_map = board.Map()
-#play_grid = board.Grid()
-#movement_grid = board.Valid_Moves()
-#attack_grid = board.Valid_Attacks()
 player1_pool = board.Pool(1)
 player2_pool = board.Pool(2)
 pass_button = gUI.Pass_Button(screen)
 instructions = gUI.Instruction(screen)
+tutorial = gUI.Tutorial(screen)
 #handle selections
 selected_unit = None
 selected_move = None
@@ -43,8 +43,9 @@ game_on_phase = False
 game_end_setup = False
 winner_text = ""
 #Selection phase
-unit_selection_phase = True
-player1_selection_phase = True
+tutorial_phase = True
+unit_selection_phase = False
+player1_selection_phase = False
 player2_selection_phase = False
 units_to_place = 9
 chosen_unit = None
@@ -451,6 +452,8 @@ while running:
     game_map.render_moves(screen)   
     game_map.render_units(screen)
     instructions.show_instructions()
+    if tutorial_phase:
+        tutorial.render_tutorial()
     if unit_selection_phase:
         player1_pool.render_pool(screen)
         player2_pool.render_pool(screen)
@@ -466,6 +469,12 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
+            if tutorial_phase:
+                tutorial_phase = False
+                unit_selection_phase = True
+                player1_selection_phase = True
+                continue
+
             check_for_selection(pos)
             check_for_gameplay(pos)
     pygame.display.update()

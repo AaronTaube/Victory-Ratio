@@ -28,7 +28,6 @@ class Tile:
         }
         self.movement = {
             "range" : False,
-            #"player" : 0,
             "reach" : False
         }
         

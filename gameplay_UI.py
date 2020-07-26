@@ -34,3 +34,9 @@ class Instruction:
         self.screen.blit(self.text, (64, 586))
     def set_instructions(self, text):
         self.text = self.font.render(text, True, self.yellow)
+class Tutorial:
+    def __init__(self, screen):
+        self.screen = screen
+        self.tutorialImg = pygame.image.load('Images\\Buttons\\Tutorial.png')
+    def render_tutorial(self):
+        self.screen.blit(self.tutorialImg, (0, 0))
