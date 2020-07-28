@@ -102,31 +102,59 @@ class Map:
                     if self.tiles[j,i].units["unit_type"] != unit_type:
                         self.tiles[j,i].tile_info["range"] = False
     def set_move_options(self, row, column):
-        #set straight movements
+        #set straight movements and movements 2 out and one over, cause easiest this way
         for i in range(3):
             current_row = row + 1 + i
             if current_row <= Map.row_count - 1:
                 if self.tiles[current_row, column].tile_info["blocker"]:
                     break
                 self.tiles[current_row, column].movement["range"] = True
+                if i == 1:
+                    if column + 1 <= Map.column_count - 1:
+                        if not self.tiles[current_row, column + 1].tile_info["blocker"]:
+                            self.tiles[current_row, column + 1].movement["range"] = True
+                    if column - 1 >= 0:
+                        if not self.tiles[current_row, column - 1].tile_info["blocker"]:
+                            self.tiles[current_row, column - 1].movement["range"] = True
         for i in range(3):
             current_row = row - 1 - i
             if current_row >= 0:
                 if self.tiles[current_row, column].tile_info["blocker"]:
                     break
                 self.tiles[current_row, column].movement["range"] = True
+                if i == 1:
+                    if column + 1 <= Map.column_count - 1:
+                        if not self.tiles[current_row, column + 1].tile_info["blocker"]:
+                            self.tiles[current_row, column + 1].movement["range"] = True
+                    if column - 1 >= 0:
+                        if not self.tiles[current_row, column - 1].tile_info["blocker"]:
+                            self.tiles[current_row, column - 1].movement["range"] = True
         for i in range(3):
             current_column = column + 1 + i
             if current_column <= Map.column_count - 1:
                 if self.tiles[row, current_column].tile_info["blocker"]:
                     break
                 self.tiles[row, current_column].movement["range"] = True
+                if i == 1:
+                    if row + 1 <= Map.row_count - 1:
+                        if not self.tiles[row + 1, current_column].tile_info["blocker"]:
+                            self.tiles[row + 1, current_column].movement["range"] = True
+                    if row - 1 >= 0:
+                        if not self.tiles[row - 1, current_column].tile_info["blocker"]:
+                            self.tiles[row - 1, current_column].movement["range"] = True
         for i in range(3):
             current_column = column - 1 - i
             if current_column >= 0:
                 if self.tiles[row, current_column].tile_info["blocker"]:
                     break
                 self.tiles[row, current_column].movement["range"] = True
+                if i == 1:
+                    if row + 1 <= Map.row_count - 1:
+                        if not self.tiles[row + 1, current_column].tile_info["blocker"]:
+                            self.tiles[row + 1, current_column].movement["range"] = True
+                    if row - 1 >= 0:
+                        if not self.tiles[row - 1, current_column].tile_info["blocker"]:
+                            self.tiles[row - 1, current_column].movement["range"] = True
         #Set Other moves, be sure to cover all possible options, some redundancy necessary
         #   up to 2 row moves
         for i in range(2):
@@ -162,7 +190,7 @@ class Map:
                 self.tiles[row + 1, current_column].movement["range"] = True
         for i in range(2):
             current_column = column - 1 - i
-            if current_column >= 0 and row + 1 <= Map.row_count :
+            if current_column >= 0 and row + 1 <= Map.row_count -1:
                 if self.tiles[row + 1, current_column].tile_info["blocker"]:
                     break
                 self.tiles[row + 1, current_column].movement["range"] = True
