@@ -20,7 +20,6 @@ class Pass_Button:
         posX, posY = pos
         if posX < 64  and posX > 0:
             if posY < 128 and posY > 0:
-                print('click')
                 return True
         return False
 #Instructive text at the bottom of the screen, such as telling whose turn it is

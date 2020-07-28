@@ -211,7 +211,6 @@ def gameplay_phase(pos):
                         combat_phase = True
                         coordinate = chosen_cell.indexX, chosen_cell.indexY
                         game_map.set_attack_options(coordinate)
-                        print("check")
                         return
                       
     if combat_phase:
