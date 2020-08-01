@@ -1,7 +1,3 @@
-import tile
-import random
-import numpy
-import pygame
 '''
 Name:       board.py
 Purpose:    Class and subclasses for displaying the map and accounting for gameplay mechanics such as terrain generation, 
@@ -13,9 +9,14 @@ TODO:       Fix the pathfinding for finding valid unit placement
             Add smarter programming to make sure there is plenty of paths and spaces for units to cross map
 Notes:
 '''
+import tile
+import random
+import numpy
+import pygame
+
 
 class Map:
-    #Positioning Data
+    ''''Positioning data for tiles of the map'''
     #create grid
     column_count = 13
     row_count = 9
@@ -23,8 +24,9 @@ class Map:
     mapX = 64
     mapY = 0
 
-    #Creates and stores an array of tiles that make up the playspace
+    
     def __init__(self):
+        '''Creates and stores an array of tiles that make up the playspace'''
         self.tiles = numpy.empty([0,Map.column_count])
         self.movedImg = pygame.image.load('Images\\Tiles\\moved_mask.png')
         self.valid_moveImg = pygame.image.load('Images\\Tiles\\movement_selection.png')
@@ -47,39 +49,47 @@ class Map:
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 self.tiles[j,i].assign_coordinate(j,i)
+
     def render_map(self,screen):
+        '''Go through the entire map matrix and call the tiles' show_tile function'''
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.tiles[i, j].show_tile(screen)
-    '''New Map code
-    Takes all the different grids and makes them run off of the one grid of tiles
-    '''
-    #Code for rendering groups
+    
     def render_units(self, screen):
+        '''Go through the entire map matrix and call the tiles' show_group function'''
         for j in range(Map.column_count):
             for i in range(Map.row_count):
                 self.tiles[i, j].show_group(screen)
-    #Puts a gray mask over tile containing a unit that can't be moved
+    
     def render_gray(self, screen):
+        '''Puts a gray mask over tile containing a unit that can't be moved'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 if self.tiles[j,i].units["moved"] == True:
                     screen.blit(self.movedImg, (64+ 64*i, 64*j))
+
     def clear_round(self):
+        '''Clears all gray tiles from moved units'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 self.tiles[i, j].units["moved"] = False
-    #Control UI for valid movement
+    
     def clear_moves(self):
+        '''Clear all tiles currently marked as valid moves'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 self.tiles[j,i].movement["range"] = False
+
     def render_moves(self, screen):
+        '''Render mask for tiles that are valid moves'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 if self.tiles[j,i].movement["range"] == True:
                     screen.blit(self.valid_moveImg, (64+ 64*i, 64*j))
+
     def player1_valid_placement(self, unit_type):
+        '''Set valid placement tiles for player 1'''
         for j in range(Map.row_count):
             for i in range(2):
                 #Set true for placeable tiles that aren't water tiles
@@ -90,7 +100,9 @@ class Map:
                 if self.tiles[j,i].units["count"] > 0:
                     if self.tiles[j,i].units["unit_type"] != unit_type:
                         self.tiles[j,i].tile_info["range"] = False
+
     def player2_valid_placement(self, unit_type):
+        '''Set valid placement tiles for player 2'''
         for j in range(Map.row_count):
             for i in range(Map.column_count - 2, Map.column_count):
                 #Set true for placeable tiles that aren't water tiles
@@ -101,7 +113,9 @@ class Map:
                 if self.tiles[j,i].units["count"] > 0:
                     if self.tiles[j,i].units["unit_type"] != unit_type:
                         self.tiles[j,i].tile_info["range"] = False
+
     def set_move_options(self, row, column):
+        '''Set valid move options up to 3 tiles out from a given index'''
         #set straight movements and movements 2 out and one over, cause easiest this way
         for i in range(3):
             current_row = row + 1 + i
@@ -213,18 +227,22 @@ class Map:
             for i in range(Map.column_count):
                 if self.tiles[j, i].units["count"] > 0:
                     self.tiles[j, i].movement["range"] = False
-    
-    #Control UI for valid attacks
+
     def render_attacks(self, screen):
+        '''Render mask for tiles that are valid attacks'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 if self.tiles[j,i].movement["reach"] == True:
                     screen.blit(self.valid_attackImg, (64+ 64*i, 64*j))
+
     def clear_attacks(self):
+        '''Clear all tiles currently marked as valid attacks'''
         for j in range(Map.row_count):
             for i in range(Map.column_count):
                 self.tiles[j,i].movement["reach"] = False
+
     def set_attack_options(self, origin):
+        '''Set valid attack options from a given index'''
         originX, originY = origin
         if originX + 1 <= Map.row_count - 1:
             self.tiles[originX + 1, originY].movement["reach"] = True
@@ -236,10 +254,11 @@ class Map:
             self.tiles[originX, originY - 1].movement["reach"] = True
 
 class Pool:
-    #Creates the Unit Pool for each player
-    #Currently creates a set pool for each player
+    '''Creates the Unit Pool for each player
+    Currently creates a set pool for each player'''
     
     def __init__(self, player):
+        '''Sets the rules for the player pool. If it is desired to change the number of units, only need to change the appropriate count here.'''
         self.player = player
         self.options = []
         if self.player == 1:
@@ -252,6 +271,7 @@ class Pool:
         self.populate_pool()
         
     def populate_pool(self):
+        '''Sets the defined pool parameters to the individual unit selection tiles'''
         self.axe_option = Unit_Selection(self.player, "axe", self.axe_count, self.x, 0)
         self.sword_option = Unit_Selection(self.player, "sword", self.sword_count, self.x, 64)
         self.spear_option = Unit_Selection(self.player, "spear", self.spear_count, self.x, 128)
@@ -260,30 +280,40 @@ class Pool:
         self.options.append(self.spear_option)
         
     def render_pool(self, screen):
+        '''Display unit pool'''
         for i in self.options:
             i.render_selection(screen)
+
     def clear_selection(self):
+        '''Make it so that no unit is currently selected in the pool'''
         for cell in self.options:
             cell.is_selected = False
     
     def unit_selected(self):
+        '''set the selected'''
         for cell in self.options:
             if cell.is_selected:
                 return True
         return False
+
     def get_selected(self):
+        '''Find which unit in the pool is selected'''
         for cell in self.options:
             if cell.is_selected:
                 return cell
         return None
+
     def get_count(self):
+        '''Check the number of units remaining'''
         count = 0
         for cell in self.options:
             count = count + cell.count
         return count
 
 class Unit_Selection:
+    '''An individual unit selection tile of given player, type, number of units, and position of the selection tile'''
     def __init__(self, player, unit_type, count, x, y):
+        '''Specify the player, type, count, and position of the selection tile, sets image of the tile accordingly'''
         self.player = player
         self.unit_type = unit_type
         self.x = x
@@ -317,6 +347,7 @@ class Unit_Selection:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueSpearIdle.png')
             elif player == 2:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
+
         self.unitImg = pygame.transform.rotozoom(self.unitImg, 0, scale)
 
         #Set the text for remaining units in selection
@@ -325,10 +356,12 @@ class Unit_Selection:
         self.text = self.font.render(str(self.count), True, self.yellow)
 
     def reduce_count(self):
+        '''Decrement number of this unit remaining in the pool'''
         self.count = self.count - 1
         self.text = self.font.render(str(self.count), True, self.yellow)
 
     def render_selection(self, screen):
+        '''Show the unit, the outline of the selection tile, and highlight the tile if it is selected'''
         #Set offset for unit type and text
         unit_offsetX = -12
         unit_offsetY = -6
@@ -348,6 +381,7 @@ class Unit_Selection:
         screen.blit(self.text, (self.x + text_offsetX, self.y + text_offsetY))
     
     def check_collision(self, pos):
+        '''Confirm if the tile has been clicked'''
         posX, posY = pos
         if posX < self.x + 64  and posX > self.x:
             if posY < self.y + 64 and posY > self.y:
@@ -355,6 +389,7 @@ class Unit_Selection:
         return False
     
     def set_selected(self):
+        '''Change self.is_selected to True'''
         self.is_selected = True
         
                 

@@ -1,5 +1,3 @@
-import pygame
-import random
 '''
 Name:       tile.py
 Purpose:    Class and subclasses for displaying the map tiles and accounting for gameplay mechanics such as terrain advantages,
@@ -10,16 +8,22 @@ TODO:       Animation for moving units
             Playing sound for animations
 Notes:
 '''
+import pygame
+import random
+
 class Tile:
+    '''Class representing tiles on a grid. Parent class to Forest, Water, and Plane. Contains dictionaries to store unit group information,
+    movement information, attack information, strength modifiers, and graphical information for the different tile types.'''
     tile_width = 64
     tile_height = 64
     def __init__(self, x, y):
+        '''Instantiate the basic information for all tiles, such as dictionaries of what data is represented by them'''
         self.tileX = x
         self.tileY = y
         self.tile_bonus = 0
         self.tileImg = pygame.image.load('Images\\Tiles\\unfound_tile.png')
         self.unitImg = None
-        self.is_blocker = False
+        #self.is_blocker = False
         self.units = {
             "unit_type" : None,
             "count" : 0,
@@ -44,35 +48,48 @@ class Tile:
         #values needed for running simple animation
         self.animateX = 0
         self.animateY = 0
+
     def show_tile(self, screen):
+        '''display this tile'''
         screen.blit(self.tileImg, (self.tileX, self.tileY))
+
     def assign_coordinate(self, x, y):
+        '''set the top left corner of the tile pposition on screen'''
         self.indexX = x
         self.indexY = y
+
     def check_collision(self, pos):
+        '''Confirms if the player clicked on this tile'''
         posX, posY = pos
         if posX < self.tileX + 64  and posX > self.tileX:
             if posY < self.tileY + 64 and posY > self.tileY:
                 return True
         return False
-    #Unit management
+
     def add_unit(self, unit_type, player = 1):
+        '''Adds a unit to the tile, setting the tile to containing this player's units, this unit type, and incrementing the count of units in this tile'''
         if self.units["unit_type"] == None:
             self.units["unit_type"] = unit_type
         if self.units["player"] == 0:
             self.units["player"] = player
         self.units["count"] = self.units["count"] + 1
         self.set_unitImg()
+
     def subtract_unit(self):
+        '''Reduce the count of units in this tile'''
         self.units["count"] = self.units["count"] - 1
         if self.units["count"] == 0:
             self.clear_units()
+
     def clear_units(self):
+        '''Reset the count, unit type, player, and movement status of this tile'''
         self.units["count"] = 0
         self.units["unit_type"] = None
         self.units["player"] = 0
         self.units["moved"] = False
+
     def set_unitImg(self):
+        '''Set whihc unit image this tile will use based of the unit type and player'''
         if self.units["player"] == 1:
             if self.units["unit_type"] == "axe":
                 self.unitImg = pygame.image.load('Images\\Soldiers\\BlueAxeIdle.png')
@@ -88,7 +105,9 @@ class Tile:
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSwordIdle.png')
             if self.units["unit_type"] == "spear":
                 self.unitImg = pygame.image.load('Images\\Soldiers\\RedSpearIdle.png')
+
     def show_group(self, screen):
+        '''Display the group of units in this tile by positioning the unit images in staggered rows'''
         #if no units present, skip
         if self.units["count"] <= 0:
             return
@@ -128,7 +147,11 @@ class Tile:
                 unitX = 12 + self.tileX + self.animateX
                 unitY = -24 + self.tileY + self.animateY
             screen.blit(self.unitImg, (unitX, unitY))
+
     def attack(self, defender):
+        '''Deal combat damage between units. Adds the attacker and defender strength together and then rolls
+            a random number up to the combined total. If it rolls under the attack strength, one unit in the 
+            defender side will die. This is performed once per unit on the attacking side'''
         #if a unit was cleared in combat, it's type can land as None. If either is gone, skip
         if self.units["unit_type"] == None or defender.units["unit_type"] == None:
             return
@@ -151,13 +174,16 @@ class Tile:
                 #if the number generated is under the attack strength, kill a unit
                 if attack < attacker_strength:
                     defender.subtract_unit()
+
     def slide_units(self, x, y):
+        '''Adds the given x and y coordinate to the unit position animation modifier'''
         self.animateX = self.animateX + x
         self.animateY = self.animateY + y
 
         
 
 class Plain(Tile):
+    '''Subclass of Tile, sets plane image'''
     #Plain style of tile
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
@@ -166,7 +192,7 @@ class Plain(Tile):
         self.tileImg = pygame.image.load('Images\\Tiles\\grass_tile.png')
 
 class Water(Tile):
-    #Water style of tile
+    '''Subclass of Tile, sets water image and that it is a blocker tile'''
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
         self.tile_info["tile_type"] = "water"
@@ -176,16 +202,10 @@ class Water(Tile):
 
 
 class Forest(Tile):
-    #Forest style of tile
+    '''Subclass of Tile, sets Forest image and a strength modifier'''
     def __init__(self, x, y):
         Tile.__init__(self,x,y)
         self.tile_info["tile_type"] = "forest"
         self.tile_info["strength"] = 25
         #Forest image
         self.tileImg = pygame.image.load('Images\\Tiles\\forest_tile.png')
-#may cancel this
-'''class Selection(Tile):
-    #Grid tile for unit pool
-    def __init__(self, x, y):
-        Tile.__init__(self,x,y)
-        self.tileImg = pygame.image.load('Images\\Tiles\\outline_pool2.png')'''
