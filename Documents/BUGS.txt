@@ -1,1 +1,9 @@
-TODO Current Bugs
+Current Bugs
+
+Turn Order
+Sometimes when there is an uneven number of unit groups between player 1 and 2, the turn order can pass incorrectly. 
+Would recommend looking into swap_turn and new_round in main.py for a solution.
+
+Adding Unit to Wrong Group
+If the user changes units they are placing, such as from axe to spear, then tries to place the spear holder in a place with an axe unit, 
+the spear count will decrease and additional axe units will be placed instead. The user should be blocked from placing a unit there.
