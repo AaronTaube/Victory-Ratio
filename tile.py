@@ -20,26 +20,27 @@ class Tile:
         '''Instantiate the basic information for all tiles, such as dictionaries of what data is represented by them'''
         self.tileX = x
         self.tileY = y
-        self.tile_bonus = 0
         self.tileImg = pygame.image.load('Images\\Tiles\\unfound_tile.png')
         self.unitImg = None
-        #self.is_blocker = False
+        #Unit info, including type, count, player controlling, and whether or not they have moved
         self.units = {
             "unit_type" : None,
             "count" : 0,
             "player" : 0,
             "moved" : False
         }
+        #Whether or not the tile is in range of a moving unit, or whithin reach of an attacking unit
         self.movement = {
             "range" : False,
             "reach" : False
         }
-        
+        #The type of the tile, it's strength modifier for defending units, and whether or not it is passable terrain
         self.tile_info = {
             "tile_type" : None,
             "strength" : 0,
             "blocker" : False
         }
+        #A dictionary of which unit type is strong against which
         self.strengths = {
             "spear" : "sword",
             "sword" : "axe",
