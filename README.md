@@ -7,6 +7,9 @@ Victory Ratio is a strategy game written in python. The following .py files are 
 **gameplay_UI.py -** contains the GUI elements and texts such as the instructional text and pass button.
  Additionally, folders containing all the necessary image files are included in source.
  
+ ## Video Demonstration
+ Recorded presentation of the game in action is available at the following link: https://youtu.be/bQQ6Z5LisTM.
+ 
  ## Requirements
  * python 3.7
  * pygame 1.9.6
